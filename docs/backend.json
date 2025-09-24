@@ -1,0 +1,64 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user within the Diamond Digger application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address for login and communication.",
+          "format": "email"
+        },
+        "diamondBalance": {
+          "type": "number",
+          "description": "The number of diamonds the user currently has."
+        },
+        "inrBalance": {
+          "type": "number",
+          "description": "The amount of INR (₹) the user has."
+        },
+        "googleId": {
+          "type": "string",
+          "description": "User's Google ID, if signed up using Google."
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information. The 'userId' parameter uniquely identifies each user. Only the authenticated user can access their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to store user data securely and efficiently. Each user has a dedicated document in the `/users` collection, identified by their unique `id`. This structure supports direct access to user profiles using the `userId`. The `/users/{userId}` path-based ownership model ensures data isolation and simplifies security rules, allowing only the authenticated user to access their data. This design promotes authorization independence, as all necessary user information is directly available in the user document, eliminating the need for complex `get()` calls in security rules. It supports the required QAPs by isolating user data into distinct documents, enabling secure `list` operations within the `/users` collection while ensuring only the authenticated user can access their own profile."
+  }
+}
