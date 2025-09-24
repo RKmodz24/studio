@@ -2,8 +2,6 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth, useUser } from "@/firebase";
-import { signOut } from "firebase/auth";
 import { intelligentAdServing } from "@/ai/flows/intelligent-ad-serving";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -12,10 +10,9 @@ import CashoutProgress from "./components/cashout-progress";
 import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
 import LifetimeEarningsCard from "./components/lifetime-earnings-card";
-import { Gem, Gift, Loader2, LogOut, Users } from "lucide-react";
+import { Gem, Gift, Loader2, Users } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 import AdPlayerGame from "./components/candy-crush-game";
 import SplashScreen from "./components/splash-screen";
 
@@ -80,8 +77,6 @@ function generateReferralCode() {
 
 export default function Home() {
   const router = useRouter();
-  const { user, isUserLoading } = useUser();
-  const auth = useAuth();
   
   const [diamondBalance, setDiamondBalance] = useState(0);
   const [lifetimeEarnings, setLifetimeEarnings] = useState(0);
@@ -102,13 +97,6 @@ export default function Home() {
     const splashTimer = setTimeout(() => setShowSplash(false), 3000);
     return () => clearTimeout(splashTimer);
   }, []);
-
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [isUserLoading, user, router]);
 
   useEffect(() => {
     const newReferralCode = generateReferralCode();
@@ -306,43 +294,9 @@ export default function Home() {
     }, 2000);
   };
   
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      router.push('/login');
-    } catch (error) {
-      console.error("Error signing out: ", error);
-      toast({
-        variant: "destructive",
-        title: "Sign Out Failed",
-        description: "An error occurred while signing out. Please try again.",
-      });
-    }
-  };
-  
   if (showSplash) {
     return <SplashScreen />;
   }
-
-  if (isUserLoading || !user) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
-        <div className="w-full max-w-md space-y-6">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-40 w-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-1/3" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-          </div>
-        </div>
-      </main>
-    );
-  }
-
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-6 lg:p-8">
@@ -354,9 +308,6 @@ export default function Home() {
               Diamond Digger
             </h1>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleSignOut}>
-            <LogOut className="h-5 w-5" />
-          </Button>
         </header>
 
         <LifetimeEarningsCard lifetimeEarnings={lifetimeEarnings} />
