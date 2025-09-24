@@ -12,8 +12,7 @@ import CashoutProgress from "./components/cashout-progress";
 import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
 import LifetimeEarningsCard from "./components/lifetime-earnings-card";
-import ReferralCard from "./components/referral-card";
-import { Gem, Gift, Loader2, LogOut } from "lucide-react";
+import { Gem, Gift, Loader2, LogOut, Users } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -103,7 +102,12 @@ export default function Home() {
   }, [isUserLoading, user, router]);
 
   useEffect(() => {
-    setReferralCode(generateReferralCode());
+    const newReferralCode = generateReferralCode();
+    setReferralCode(newReferralCode);
+    // Store in localStorage so it can be accessed by the /refer page
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('referralCode', newReferralCode);
+    }
   }, []);
 
   const { toast } = useToast();
@@ -151,7 +155,13 @@ export default function Home() {
       if (referralCount > 0 && taskId !== '46') {
         const commission = Math.floor(reward * REFERRAL_COMMISSION_RATE);
         addDiamonds(commission);
-        setCommissionEarned(prev => prev + commission);
+        setCommissionEarned(prev => {
+            const newCommission = prev + commission;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('commissionEarned', String(newCommission / DIAMONDS_PER_INR));
+            }
+            return newCommission;
+        });
         toast({
           title: "Referral Bonus!",
           description: `You earned ${commission} diamonds from a referral's activity.`,
@@ -159,7 +169,13 @@ export default function Home() {
       }
 
       if (taskId === '46') {
-        setReferralCount(prev => prev + 1);
+        setReferralCount(prev => {
+            const newCount = prev + 1;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('referralCount', String(newCount));
+            }
+            return newCount;
+        });
         toast({
           title: "Referral Applied!",
           description: "You've successfully referred a new user!",
@@ -261,6 +277,10 @@ export default function Home() {
       setLifetimeEarnings(prev => prev + amountToCashout);
       setDiamondBalance(0);
       setCommissionEarned(0);
+      if (typeof window !== 'undefined') {
+          localStorage.setItem('referralCount', '0');
+          localStorage.setItem('commissionEarned', '0');
+      }
       setIsCashingOut(false);
       setTasks(initialTasks.map(t => ({...t, completed: false})));
       toast({
@@ -327,11 +347,10 @@ export default function Home() {
           balanceKey={balanceKey}
         />
         
-        <ReferralCard 
-          referralCode={referralCode}
-          referralCount={referralCount}
-          commissionEarned={commissionInr}
-        />
+        <Button variant="outline" className="w-full" onClick={() => router.push('/refer')}>
+          <Users className="mr-2 h-4 w-4" />
+          Refer & Earn
+        </Button>
 
         <CashoutProgress
           progress={progress}
