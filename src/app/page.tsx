@@ -7,38 +7,60 @@ import { Button } from "@/components/ui/button";
 import BalanceCard from "./components/balance-card";
 import CashoutProgress from "./components/cashout-progress";
 import TaskList from "./components/task-list";
+import PayoutForm from "./components/payout-form";
 import { Gem, Gift, Loader2 } from "lucide-react";
-import type { Task } from "@/lib/types";
+import type { Task, PayoutDetails } from "@/lib/types";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
 
 const initialTasks: Task[] = [
-  { id: "1", title: "Daily Check-in", reward: 100, completed: false, type: "basic" },
-  { id: "2", title: "Watch a video ad", reward: 250, completed: false, type: "ad" },
-  { id: "3", title: "Rate our App", reward: 500, completed: false, type: "basic" },
-  { id: "4", title: "Complete a survey", reward: 1000, completed: false, type: "basic" },
-  { id: "5", title: "Watch another video ad", reward: 250, completed: false, type: "ad" },
-  { id: "6", title: "Share app with a friend", reward: 300, completed: false, type: "basic" },
-  { id: "7", title: "Watch a partner ad", reward: 250, completed: false, type: "ad" },
-  { id: "8", title: "Follow us on social media", reward: 150, completed: false, type: "basic" },
-  { id: "9", title: "Play a mini-game", reward: 50, completed: false, type: "basic" },
-  { id: "10", title: "Watch a tutorial video", reward: 200, completed: false, type: "ad" },
-  { id: "11", title: "Enable push notifications", reward: 400, completed: false, type: "basic" },
-  { id: "12", title: "Complete your profile", reward: 200, completed: false, type: "basic" },
-  { id: "13", title: "Try a new feature", reward: 150, completed: false, type: "basic" },
-  { id: "14", title: "Watch a sponsored video", reward: 300, completed: false, type: "ad" },
-  { id: "15", title: "Leave a review", reward: 450, completed: false, type: "basic" },
-  { id: "16", title: "Refer a user", reward: 1500, completed: false, type: "basic" },
-  { id: "17", title: "View a special offer", reward: 220, completed: false, type: "ad" },
-  { id: "18", title: "Link your email", reward: 350, completed: false, type: "basic" },
-  { id: "19", title: "Weekly challenge", reward: 750, completed: false, type: "basic" },
-  { id: "20", title: "Engage with community post", reward: 80, completed: false, type: "basic" },
-  { id: "21", title: "Watch short ad clip", reward: 150, completed: false, type: "ad" },
-  { id: "22", title: "Join our newsletter", reward: 250, completed: false, type: "basic" },
-  { id: "23", title: "Login for 3 consecutive days", reward: 500, completed: false, type: "basic" },
-  { id: "24", title: "Watch a rewarded ad", reward: 250, completed: false, type: "ad" },
-  { id: "25", title: "Achieve a milestone", reward: 1200, completed: false, type: "basic" },
+    { id: "1", title: "Daily Check-in", reward: 100, completed: false, type: "basic" },
+    { id: "2", title: "Watch a video ad", reward: 250, completed: false, type: "ad" },
+    { id: "3", title: "Rate our App", reward: 500, completed: false, type: "basic" },
+    { id: "4", title: "Complete a survey", reward: 1000, completed: false, type: "basic" },
+    { id: "5", title: "Watch another video ad", reward: 250, completed: false, type: "ad" },
+    { id: "6", title: "Share app with a friend", reward: 300, completed: false, type: "basic" },
+    { id: "7", title: "Watch a partner ad", reward: 250, completed: false, type: "ad" },
+    { id: "8", title: "Follow us on social media", reward: 150, completed: false, type: "basic" },
+    { id: "9", title: "Play a mini-game", reward: 50, completed: false, type: "basic" },
+    { id: "10", title: "Watch a tutorial video", reward: 200, completed: false, type: "ad" },
+    { id: "11", title: "Enable push notifications", reward: 400, completed: false, type: "basic" },
+    { id: "12", title: "Complete your profile", reward: 200, completed: false, type: "basic" },
+    { id: "13", title: "Try a new feature", reward: 150, completed: false, type: "basic" },
+    { id: "14", title: "Watch a sponsored video", reward: 300, completed: false, type: "ad" },
+    { id: "15", title: "Leave a review", reward: 450, completed: false, type: "basic" },
+    { id: "16", title: "Refer a user", reward: 1500, completed: false, type: "basic" },
+    { id: "17", title: "View a special offer", reward: 220, completed: false, type: "ad" },
+    { id: "18", title: "Link your email", reward: 350, completed: false, type: "basic" },
+    { id: "19", title: "Weekly challenge", reward: 750, completed: false, type: "basic" },
+    { id: "20", title: "Engage with community post", reward: 80, completed: false, type: "basic" },
+    { id: "21", title: "Watch short ad clip", reward: 150, completed: false, type: "ad" },
+    { id: "22", title: "Join our newsletter", reward: 250, completed: false, type: "basic" },
+    { id: "23", title: "Login for 3 consecutive days", reward: 500, completed: false, type: "basic" },
+    { id: "24", title: "Watch a rewarded ad", reward: 250, completed: false, type: "ad" },
+    { id: "25", title: "Achieve a milestone", reward: 1200, completed: false, type: "basic" },
+    { id: "26", title: "Complete 5 tasks", reward: 400, completed: false, type: 'basic' },
+    { id: "27", title: "Watch 3 video ads", reward: 600, completed: false, type: 'ad' },
+    { id: "28", title: "Update your bio", reward: 50, completed: false, type: 'basic' },
+    { id: "29", title: "Verify your phone number", reward: 300, completed: false, type: 'basic' },
+    { id: "30", title: "Watch a featured ad", reward: 350, completed: false, type: 'ad' },
+    { id: "31", title: "Participate in a poll", reward: 70, completed: false, type: 'basic' },
+    { id: "32", title: "Daily spin wheel", reward: 120, completed: false, type: 'basic' },
+    { id: "33", title: "Watch an interactive ad", reward: 400, completed: false, type: 'ad' },
+    { id: "34", title: "Set a profile picture", reward: 100, completed: false, type: 'basic' },
+    { id: "35", title: "Reach level 5", reward: 1000, completed: false, type: 'basic' },
+    { id: "36", title: "Watch a long-form ad", reward: 500, completed: false, type: 'ad' },
+    { id: "37", title: "Invite 3 friends", reward: 1000, completed: false, type: 'basic' },
+    { id: "38", title: "Complete a quiz", reward: 150, completed: false, type: 'basic' },
+    { id: "39", title: "Watch a brand story ad", reward: 300, completed: false, type: 'ad' },
+    { id: "40", title: "Join a challenge", reward: 600, completed: false, type: 'basic' },
+    { id: "41", title: "Read an article", reward: 60, completed: false, type: 'basic' },
+    { id: "42", title: "Login for 7 consecutive days", reward: 1200, completed: false, type: 'basic' },
+    { id: "43", title: "Watch a premium ad", reward: 500, completed: false, type: 'ad' },
+    { id: "44", title: "Test a new game", reward: 800, completed: false, type: 'basic' },
+    { id: "45", title: "Complete all daily tasks", reward: 1500, completed: false, type: 'basic' },
 ];
 
 export default function Home() {
@@ -48,6 +70,7 @@ export default function Home() {
   const [isCashingOut, setIsCashingOut] = useState(false);
   const [balanceKey, setBalanceKey] = useState(0);
   const [isBonusLoading, setIsBonusLoading] = useState(false);
+  const [isPayoutFormOpen, setIsPayoutFormOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -150,22 +173,27 @@ export default function Home() {
 
   const handleCashout = () => {
     if (inrBalance >= MINIMUM_PAYOUT_INR) {
-      setIsCashingOut(true);
-      toast({
-        title: "Processing Cashout...",
-        description: `Cashing out ₹${inrBalance.toFixed(2)}.`,
-      });
-      setTimeout(() => {
-        setDiamondBalance(0);
-        setIsCashingOut(false);
-        setTasks(initialTasks.map(t => ({...t, completed: false})));
-        toast({
-          title: "Success!",
-          description: "Your cashout request has been processed.",
-        });
-      }, 2000);
+      setIsPayoutFormOpen(true);
     }
   };
+
+  const processCashout = (details: PayoutDetails) => {
+    setIsCashingOut(true);
+    setIsPayoutFormOpen(false);
+    toast({
+      title: "Processing Cashout...",
+      description: `Cashing out ₹${inrBalance.toFixed(2)} to ${details.accountHolderName}.`,
+    });
+    setTimeout(() => {
+      setDiamondBalance(0);
+      setIsCashingOut(false);
+      setTasks(initialTasks.map(t => ({...t, completed: false})));
+      toast({
+        title: "Success!",
+        description: "Your cashout request has been processed.",
+      });
+    }, 2000);
+  }
 
 
   return (
@@ -203,6 +231,21 @@ export default function Home() {
           <TaskList tasks={tasks} onCompleteTask={handleTaskComplete} />
         </div>
       </div>
+      <Dialog open={isPayoutFormOpen} onOpenChange={setIsPayoutFormOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enter Payout Details</DialogTitle>
+            <DialogDescription>
+              Please provide your bank account information to receive your payment.
+            </DialogDescription>
+          </DialogHeader>
+          <PayoutForm
+            amount={inrBalance}
+            onSubmit={processCashout}
+            isProcessing={isCashingOut}
+          />
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
