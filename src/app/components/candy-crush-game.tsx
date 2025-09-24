@@ -57,9 +57,13 @@ const AdPlayerGame = ({ onReward }: AdPlayerProps) => {
 
   const handleWatchAd = () => {
     setIsWatchingAd(true);
+    const adDurations = [10, 30];
+    const adDurationInSeconds = adDurations[Math.floor(Math.random() * adDurations.length)];
+    const adDurationInMilliseconds = adDurationInSeconds * 1000;
+
     toast({
         title: "Ad playing...",
-        description: "You will be rewarded after the ad."
+        description: `This ad is ${adDurationInSeconds} seconds long. You will be rewarded after.`
     });
 
     setTimeout(() => {
@@ -71,7 +75,7 @@ const AdPlayerGame = ({ onReward }: AdPlayerProps) => {
           title: "Ad Finished!",
           description: `You earned ${adReward} diamonds.`,
         });
-    }, 5000); // 5 second ad simulation
+    }, adDurationInMilliseconds); 
   };
   
 
