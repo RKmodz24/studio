@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { PayoutDetails } from "@/lib/types";
 import { Loader2 } from "lucide-react";
@@ -31,6 +33,7 @@ const bankSchema = z.object({
   bankName: z.string().min(3, {
     message: "Bank name seems too short.",
   }),
+  rememberDetails: z.boolean().default(false),
 });
 
 const upiSchema = z.object({
@@ -38,6 +41,7 @@ const upiSchema = z.object({
   upiId: z.string().regex(/^[\w.-]+@[\w.-]+$/, {
     message: "Enter a valid UPI ID.",
   }),
+  rememberDetails: z.boolean().default(false),
 });
 
 const formSchema = z.discriminatedUnion("payoutType", [
@@ -47,32 +51,44 @@ const formSchema = z.discriminatedUnion("payoutType", [
 
 type PayoutFormProps = {
   amount: number;
-  onSubmit: (details: PayoutDetails) => void;
+  onSubmit: (details: PayoutDetails, remember: boolean) => void;
   isProcessing: boolean;
+  savedDetails?: PayoutDetails | null;
 };
 
-const PayoutForm = ({ amount, onSubmit, isProcessing }: PayoutFormProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      payoutType: "bank",
+const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutFormProps) => {
+  const defaultValues = savedDetails ? {
+    ...savedDetails,
+    rememberDetails: true,
+    accountHolderName: savedDetails.payoutType === 'bank' ? savedDetails.accountHolderName : '',
+    accountNumber: savedDetails.payoutType === 'bank' ? savedDetails.accountNumber : '',
+    ifscCode: savedDetails.payoutType === 'bank' ? savedDetails.ifscCode : '',
+    bankName: savedDetails.payoutType === 'bank' ? savedDetails.bankName : '',
+    upiId: savedDetails.payoutType === 'upi' ? savedDetails.upiId : '',
+  } : {
+      payoutType: "bank" as const,
       accountHolderName: "",
       accountNumber: "",
       ifscCode: "",
       bankName: "",
       upiId: "",
-    },
+      rememberDetails: false,
+  };
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: defaultValues,
   });
 
   function handleFormSubmit(values: z.infer<typeof formSchema>) {
-    onSubmit(values);
+    onSubmit(values, values.rememberDetails);
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
         <Tabs
-            defaultValue="bank"
+            defaultValue={savedDetails?.payoutType || "bank"}
             className="w-full"
             onValueChange={(value) => form.setValue("payoutType", value as "bank" | "upi")}
         >
@@ -152,6 +168,29 @@ const PayoutForm = ({ amount, onSubmit, isProcessing }: PayoutFormProps) => {
             />
           </TabsContent>
         </Tabs>
+        
+        <FormField
+          control={form.control}
+          name="rememberDetails"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>
+                  Save these details for future payouts
+                </FormLabel>
+                <FormDescription>
+                  Your payout information will be pre-filled next time.
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
         
         <Button type="submit" className="w-full" disabled={isProcessing}>
           {isProcessing ? (

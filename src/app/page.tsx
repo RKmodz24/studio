@@ -94,6 +94,8 @@ export default function Home() {
   const [referralCode, setReferralCode] = useState('');
   const [referralCount, setReferralCount] = useState(0);
   const [commissionEarned, setCommissionEarned] = useState(0);
+  const [savedPayoutDetails, setSavedPayoutDetails] = useState<PayoutDetails | null>(null);
+
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -259,9 +261,16 @@ export default function Home() {
     }
   };
 
-  const processCashout = (details: PayoutDetails) => {
+  const processCashout = (details: PayoutDetails, remember: boolean) => {
     setIsCashingOut(true);
     setIsPayoutFormOpen(false);
+
+    if (remember) {
+      setSavedPayoutDetails(details);
+    } else {
+      setSavedPayoutDetails(null);
+    }
+    
     const amountToCashout = inrBalance;
     let description = "";
     if (details.payoutType === 'bank') {
@@ -383,6 +392,7 @@ export default function Home() {
             amount={inrBalance}
             onSubmit={processCashout}
             isProcessing={isCashingOut}
+            savedDetails={savedPayoutDetails}
           />
         </DialogContent>
       </Dialog>
