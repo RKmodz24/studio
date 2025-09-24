@@ -70,7 +70,7 @@ const initialTasks: Task[] = [
     { id: "44", title: "Test a new game", reward: 800, completed: false, type: 'basic' },
     { id: "45", title: "Complete all daily tasks", reward: 1500, completed: false, type: 'basic' },
     { id: '46', title: 'Apply a referral code', reward: 500, completed: false, type: 'basic' },
-    { id: '47', title: 'Play Candy Crush', reward: 300, completed: false, type: 'game' },
+    { id: '47', title: 'Play Candy Crush', reward: 0, completed: false, type: 'game' },
 ];
 
 function generateReferralCode() {
@@ -117,20 +117,10 @@ export default function Home() {
     setBalanceKey(prev => prev + 1);
   }, []);
   
-  const handleGameComplete = useCallback((reward: number) => {
+  const handleGameReward = useCallback((reward: number) => {
       addDiamonds(reward);
-      setTasks(currentTasks =>
-        currentTasks.map(t => (t.id === '47' ? { ...t, completed: true } : t))
-      );
-      toast({
-        title: "Task Completed!",
-        description: (
-          <div className="flex items-center">
-            You've earned {reward} <Gem className="ml-1 h-4 w-4 text-blue-400" />
-          </div>
-        ),
-      });
-  }, [addDiamonds, toast]);
+      // No toast here, it's handled inside the game component
+  }, [addDiamonds]);
 
   const handleTaskComplete = useCallback((taskId: string, reward: number, type: Task['type']) => {
     const task = tasks.find(t => t.id === taskId);
@@ -142,7 +132,9 @@ export default function Home() {
     }
 
     const completeTask = () => {
-      addDiamonds(reward);
+      if (reward > 0) {
+        addDiamonds(reward);
+      }
       setTasks(currentTasks =>
         currentTasks.map(t => (t.id === taskId ? { ...t, completed: true } : t))
       );
@@ -376,14 +368,14 @@ export default function Home() {
         </DialogContent>
       </Dialog>
       <Dialog open={isGameOpen} onOpenChange={setIsGameOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-sm">
             <DialogHeader>
                 <DialogTitle>Candy Crush Game</DialogTitle>
                 <DialogDescription>
-                    Play for 40 seconds to earn a reward!
+                    The longer you play, the more you earn! Rewards are credited automatically.
                 </DialogDescription>
             </DialogHeader>
-            <CandyCrushGame onComplete={handleGameComplete} reward={300} />
+            <CandyCrushGame onReward={handleGameReward} />
         </DialogContent>
       </Dialog>
     </main>
