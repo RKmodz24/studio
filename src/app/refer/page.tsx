@@ -27,7 +27,7 @@ export default function ReferPage() {
 
     if (storedCode) {
       setReferralCode(storedCode);
-      const baseUrl = "https://24/7-reward-studio-1758733731042.cluster-44kx2eiocbhe2tyk3zoyo3ryuo.cloudworkstations.dev";
+      const baseUrl = "https://24-7-reward-studio-1758733731042.cluster-44kx2eiocbhe2tyk3zoyo3ryuo.cloudworkstations.dev";
       setReferralLink(`${baseUrl}/?ref=${storedCode}`);
     }
     if (storedCount) {
