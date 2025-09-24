@@ -17,6 +17,7 @@ import { Gem, Gift, Loader2, LogOut } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import CandyCrushGame from "./components/candy-crush-game";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
@@ -69,6 +70,7 @@ const initialTasks: Task[] = [
     { id: "44", title: "Test a new game", reward: 800, completed: false, type: 'basic' },
     { id: "45", title: "Complete all daily tasks", reward: 1500, completed: false, type: 'basic' },
     { id: '46', title: 'Apply a referral code', reward: 500, completed: false, type: 'basic' },
+    { id: '47', title: 'Play Candy Crush', reward: 300, completed: false, type: 'game' },
 ];
 
 function generateReferralCode() {
@@ -89,6 +91,7 @@ export default function Home() {
   const [balanceKey, setBalanceKey] = useState(0);
   const [isBonusLoading, setIsBonusLoading] = useState(false);
   const [isPayoutFormOpen, setIsPayoutFormOpen] = useState(false);
+  const [isGameOpen, setIsGameOpen] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [referralCount, setReferralCount] = useState(0);
   const [commissionEarned, setCommissionEarned] = useState(0);
@@ -113,10 +116,30 @@ export default function Home() {
     setDiamondBalance((prev) => prev + amount);
     setBalanceKey(prev => prev + 1);
   }, []);
+  
+  const handleGameComplete = useCallback((reward: number) => {
+      addDiamonds(reward);
+      setTasks(currentTasks =>
+        currentTasks.map(t => (t.id === '47' ? { ...t, completed: true } : t))
+      );
+      toast({
+        title: "Task Completed!",
+        description: (
+          <div className="flex items-center">
+            You've earned {reward} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+          </div>
+        ),
+      });
+  }, [addDiamonds, toast]);
 
-  const handleTaskComplete = useCallback((taskId: string, reward: number, type: 'basic' | 'ad') => {
+  const handleTaskComplete = useCallback((taskId: string, reward: number, type: Task['type']) => {
     const task = tasks.find(t => t.id === taskId);
     if (!task || task.completed) return;
+    
+    if (type === 'game') {
+        setIsGameOpen(true);
+        return;
+    }
 
     const completeTask = () => {
       addDiamonds(reward);
@@ -350,6 +373,17 @@ export default function Home() {
             onSubmit={processCashout}
             isProcessing={isCashingOut}
           />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isGameOpen} onOpenChange={setIsGameOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Candy Crush Game</DialogTitle>
+                <DialogDescription>
+                    Play for 40 seconds to earn a reward!
+                </DialogDescription>
+            </DialogHeader>
+            <CandyCrushGame onComplete={handleGameComplete} reward={300} />
         </DialogContent>
       </Dialog>
     </main>

@@ -3,7 +3,7 @@ export type Task = {
   title: string;
   reward: number;
   completed: boolean;
-  type: 'basic' | 'ad';
+  type: 'basic' | 'ad' | 'game';
 };
 
 export type BankPayoutDetails = {

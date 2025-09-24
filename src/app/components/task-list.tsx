@@ -1,12 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Gem, PlayCircle } from "lucide-react";
+import { CheckCircle2, Gem, PlayCircle, Gamepad2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
 
 type TaskListProps = {
   tasks: Task[];
-  onCompleteTask: (taskId: string, reward: number, type: 'basic' | 'ad') => void;
+  onCompleteTask: (taskId: string, reward: number, type: Task['type']) => void;
 };
 
 const TaskList = ({ tasks, onCompleteTask }: TaskListProps) => {
@@ -28,6 +28,8 @@ const TaskList = ({ tasks, onCompleteTask }: TaskListProps) => {
               )}>
                 {task.type === 'ad' ? (
                   <PlayCircle className={cn("h-6 w-6", task.completed ? "text-gray-500" : "text-primary")} />
+                ) : task.type === 'game' ? (
+                    <Gamepad2 className={cn("h-6 w-6", task.completed ? "text-gray-500" : "text-primary")} />
                 ) : (
                   <Gem className={cn("h-6 w-6", task.completed ? "text-gray-500" : "text-primary")} />
                 )}
@@ -53,7 +55,7 @@ const TaskList = ({ tasks, onCompleteTask }: TaskListProps) => {
                   Done
                 </>
               ) : (
-                "Complete"
+                task.type === 'game' ? "Play" : "Complete"
               )}
             </Button>
           </CardContent>
