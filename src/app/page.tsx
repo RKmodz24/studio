@@ -8,6 +8,7 @@ import BalanceCard from "./components/balance-card";
 import CashoutProgress from "./components/cashout-progress";
 import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
+import LifetimeEarningsCard from "./components/lifetime-earnings-card";
 import { Gem, Gift, Loader2 } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -65,6 +66,7 @@ const initialTasks: Task[] = [
 
 export default function Home() {
   const [diamondBalance, setDiamondBalance] = useState(0);
+  const [lifetimeEarnings, setLifetimeEarnings] = useState(0);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [adShownCount, setAdShownCount] = useState(0);
   const [isCashingOut, setIsCashingOut] = useState(false);
@@ -180,17 +182,19 @@ export default function Home() {
   const processCashout = (details: PayoutDetails) => {
     setIsCashingOut(true);
     setIsPayoutFormOpen(false);
+    const amountToCashout = inrBalance;
     let description = "";
     if (details.payoutType === 'bank') {
-      description = `Cashing out ₹${inrBalance.toFixed(2)} to ${details.accountHolderName}.`;
+      description = `Cashing out ₹${amountToCashout.toFixed(2)} to ${details.accountHolderName}.`;
     } else {
-      description = `Cashing out ₹${inrBalance.toFixed(2)} to UPI ID: ${details.upiId}.`;
+      description = `Cashing out ₹${amountToCashout.toFixed(2)} to UPI ID: ${details.upiId}.`;
     }
     toast({
       title: "Processing Cashout...",
       description: description,
     });
     setTimeout(() => {
+      setLifetimeEarnings(prev => prev + amountToCashout);
       setDiamondBalance(0);
       setIsCashingOut(false);
       setTasks(initialTasks.map(t => ({...t, completed: false})));
@@ -211,6 +215,8 @@ export default function Home() {
             Diamond Digger
           </h1>
         </header>
+
+        <LifetimeEarningsCard lifetimeEarnings={lifetimeEarnings} />
 
         <BalanceCard 
           diamondBalance={diamondBalance} 
