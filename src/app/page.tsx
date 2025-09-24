@@ -1,3 +1,188 @@
+"use client";
+
+import { useState, useMemo, useCallback } from "react";
+import { intelligentAdServing } from "@/ai/flows/intelligent-ad-serving";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import BalanceCard from "./components/balance-card";
+import CashoutProgress from "./components/cashout-progress";
+import TaskList from "./components/task-list";
+import { Gem, Gift, Loader2 } from "lucide-react";
+import type { Task } from "@/lib/types";
+
+const DIAMONDS_PER_INR = 100;
+const MINIMUM_PAYOUT_INR = 100;
+
+const initialTasks: Task[] = [
+  { id: "1", title: "Daily Check-in", reward: 100, completed: false, type: "basic" },
+  { id: "2", title: "Watch a video ad", reward: 250, completed: false, type: "ad" },
+  { id: "3", title: "Rate our App", reward: 500, completed: false, type: "basic" },
+  { id: "4", title: "Complete a survey", reward: 1000, completed: false, type: "basic" },
+  { id: "5", title: "Watch another video ad", reward: 250, completed: false, type: "ad" },
+];
+
 export default function Home() {
-  return <></>;
+  const [diamondBalance, setDiamondBalance] = useState(0);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [adShownCount, setAdShownCount] = useState(0);
+  const [isCashingOut, setIsCashingOut] = useState(false);
+  const [balanceKey, setBalanceKey] = useState(0);
+  const [isBonusLoading, setIsBonusLoading] = useState(false);
+
+  const { toast } = useToast();
+
+  const inrBalance = useMemo(() => diamondBalance / DIAMONDS_PER_INR, [diamondBalance]);
+  const progress = useMemo(() => Math.min((inrBalance / MINIMUM_PAYOUT_INR) * 100, 100), [inrBalance]);
+
+  const addDiamonds = useCallback((amount: number) => {
+    setDiamondBalance((prev) => prev + amount);
+    setBalanceKey(prev => prev + 1);
+  }, []);
+
+  const handleTaskComplete = useCallback((taskId: string, reward: number, type: 'basic' | 'ad') => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task || task.completed) return;
+
+    const completeTask = () => {
+      addDiamonds(reward);
+      setTasks(currentTasks =>
+        currentTasks.map(t => (t.id === taskId ? { ...t, completed: true } : t))
+      );
+      toast({
+        title: "Task Completed!",
+        description: (
+          <div className="flex items-center">
+            You've earned {reward} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+          </div>
+        ),
+      });
+    }
+
+    if(type === 'ad'){
+      toast({ title: "Watching ad..." });
+      setTimeout(() => {
+        completeTask();
+      }, 2000);
+    } else {
+      completeTask();
+    }
+  }, [tasks, addDiamonds, toast]);
+
+  const handleSurpriseBonus = async () => {
+    setIsBonusLoading(true);
+    const adFrequency = adShownCount < 2 ? "low" : adShownCount < 5 ? "medium" : "high";
+    toast({ title: "Checking for a bonus..." });
+
+    try {
+      const result = await intelligentAdServing({
+        userActivity: 'User clicked on "Surprise Bonus"',
+        coinBalance: diamondBalance,
+        adFrequency: adFrequency,
+      });
+
+      if (result.showAd) {
+        setAdShownCount((prev) => prev + 1);
+        toast({
+          title: "Ad Time!",
+          description: `Reason: ${result.reason}. You will be rewarded after the ad.`,
+          duration: 3000,
+        });
+        setTimeout(() => {
+          const bonus = Math.floor(Math.random() * 200) + 50;
+          addDiamonds(bonus);
+          toast({
+            title: "Bonus Awarded!",
+            description: (
+              <div className="flex items-center">
+                You received {bonus} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+              </div>
+            ),
+          });
+          setIsBonusLoading(false);
+        }, 3000);
+      } else {
+        toast({
+          title: "No ad this time.",
+          description: result.reason,
+        });
+        const bonus = Math.floor(Math.random() * 50) + 10;
+        addDiamonds(bonus);
+        toast({
+          title: "Small Bonus!",
+          description: (
+             <div className="flex items-center">
+              You received a small bonus of {bonus} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+            </div>
+          ),
+        });
+        setIsBonusLoading(false);
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Could not contact our ad server.",
+      });
+      setIsBonusLoading(false);
+    }
+  };
+
+  const handleCashout = () => {
+    if (inrBalance >= MINIMUM_PAYOUT_INR) {
+      setIsCashingOut(true);
+      toast({
+        title: "Processing Cashout...",
+        description: `Cashing out ₹${inrBalance.toFixed(2)}.`,
+      });
+      setTimeout(() => {
+        setDiamondBalance(0);
+        setIsCashingOut(false);
+        setTasks(initialTasks.map(t => ({...t, completed: false})));
+        toast({
+          title: "Success!",
+          description: "Your cashout request has been processed.",
+        });
+      }, 2000);
+    }
+  };
+
+
+  return (
+    <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-md space-y-6">
+        <header className="flex items-center justify-center space-x-3 text-center">
+          <Gem className="h-8 w-8 text-primary" />
+          <h1 className="font-headline text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200">
+            Diamond Digger
+          </h1>
+        </header>
+
+        <BalanceCard 
+          diamondBalance={diamondBalance} 
+          inrBalance={inrBalance}
+          balanceKey={balanceKey}
+        />
+
+        <CashoutProgress
+          progress={progress}
+          inrBalance={inrBalance}
+          minPayout={MINIMUM_PAYOUT_INR}
+          onCashout={handleCashout}
+          isCashingOut={isCashingOut}
+        />
+
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="font-headline text-2xl font-semibold text-gray-700 dark:text-gray-300">Tasks</h2>
+             <Button onClick={handleSurpriseBonus} disabled={isBonusLoading}>
+              {isBonusLoading ? <Loader2 className="animate-spin" /> : <Gift />}
+              Surprise Bonus
+            </Button>
+          </div>
+          <TaskList tasks={tasks} onCompleteTask={handleTaskComplete} />
+        </div>
+      </div>
+    </main>
+  );
 }
