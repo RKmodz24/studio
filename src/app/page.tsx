@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { intelligentAdServing } from "@/ai/flows/intelligent-ad-serving";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -9,12 +9,14 @@ import CashoutProgress from "./components/cashout-progress";
 import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
 import LifetimeEarningsCard from "./components/lifetime-earnings-card";
+import ReferralCard from "./components/referral-card";
 import { Gem, Gift, Loader2 } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
+const REFERRAL_COMMISSION_RATE = 0.20;
 
 const initialTasks: Task[] = [
     { id: "1", title: "Daily Check-in", reward: 100, completed: false, type: "basic" },
@@ -62,7 +64,13 @@ const initialTasks: Task[] = [
     { id: "43", title: "Watch a premium ad", reward: 500, completed: false, type: 'ad' },
     { id: "44", title: "Test a new game", reward: 800, completed: false, type: 'basic' },
     { id: "45", title: "Complete all daily tasks", reward: 1500, completed: false, type: 'basic' },
+    { id: '46', title: 'Apply a referral code', reward: 500, completed: false, type: 'basic' },
 ];
+
+function generateReferralCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
 
 export default function Home() {
   const [diamondBalance, setDiamondBalance] = useState(0);
@@ -73,11 +81,19 @@ export default function Home() {
   const [balanceKey, setBalanceKey] = useState(0);
   const [isBonusLoading, setIsBonusLoading] = useState(false);
   const [isPayoutFormOpen, setIsPayoutFormOpen] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [referralCount, setReferralCount] = useState(0);
+  const [commissionEarned, setCommissionEarned] = useState(0);
+
+  useEffect(() => {
+    setReferralCode(generateReferralCode());
+  }, []);
 
   const { toast } = useToast();
 
   const inrBalance = useMemo(() => diamondBalance / DIAMONDS_PER_INR, [diamondBalance]);
   const progress = useMemo(() => Math.min((inrBalance / MINIMUM_PAYOUT_INR) * 100, 100), [inrBalance]);
+  const commissionInr = useMemo(() => commissionEarned / DIAMONDS_PER_INR, [commissionEarned]);
 
   const addDiamonds = useCallback((amount: number) => {
     setDiamondBalance((prev) => prev + amount);
@@ -101,6 +117,25 @@ export default function Home() {
           </div>
         ),
       });
+
+      // Simulate referral commission
+      if (referralCount > 0 && taskId !== '46') {
+        const commission = Math.floor(reward * REFERRAL_COMMISSION_RATE);
+        addDiamonds(commission);
+        setCommissionEarned(prev => prev + commission);
+        toast({
+          title: "Referral Bonus!",
+          description: `You earned ${commission} diamonds from a referral's activity.`,
+        });
+      }
+
+      if (taskId === '46') {
+        setReferralCount(prev => prev + 1);
+        toast({
+          title: "Referral Applied!",
+          description: "You've successfully referred a new user!",
+        });
+      }
     }
 
     if(type === 'ad'){
@@ -111,7 +146,7 @@ export default function Home() {
     } else {
       completeTask();
     }
-  }, [tasks, addDiamonds, toast]);
+  }, [tasks, addDiamonds, toast, referralCount]);
 
   const handleSurpriseBonus = async () => {
     setIsBonusLoading(true);
@@ -196,6 +231,7 @@ export default function Home() {
     setTimeout(() => {
       setLifetimeEarnings(prev => prev + amountToCashout);
       setDiamondBalance(0);
+      setCommissionEarned(0);
       setIsCashingOut(false);
       setTasks(initialTasks.map(t => ({...t, completed: false})));
       toast({
@@ -222,6 +258,12 @@ export default function Home() {
           diamondBalance={diamondBalance} 
           inrBalance={inrBalance}
           balanceKey={balanceKey}
+        />
+        
+        <ReferralCard 
+          referralCode={referralCode}
+          referralCount={referralCount}
+          commissionEarned={commissionInr}
         />
 
         <CashoutProgress
