@@ -19,10 +19,8 @@ const ReferralCard = ({ referralCode, referralCount, commissionEarned }: Referra
   const [referralLink, setReferralLink] = useState('');
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const baseUrl = window.location.origin;
-      setReferralLink(`${baseUrl}/?ref=${referralCode}`);
-    }
+    const baseUrl = "https://24/7-reward-studio-1758733731042.cluster-44kx2eiocbhe2tyk3zoyo3ryuo.cloudworkstations.dev";
+    setReferralLink(`${baseUrl}/?ref=${referralCode}`);
   }, [referralCode]);
 
   const handleCopy = (textToCopy: string, type: 'code' | 'link') => {
