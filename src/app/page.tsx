@@ -17,6 +17,7 @@ import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import AdPlayerGame from "./components/candy-crush-game";
+import SplashScreen from "./components/splash-screen";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
@@ -95,6 +96,12 @@ export default function Home() {
   const [referralCount, setReferralCount] = useState(0);
   const [commissionEarned, setCommissionEarned] = useState(0);
   const [savedPayoutDetails, setSavedPayoutDetails] = useState<PayoutDetails | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const splashTimer = setTimeout(() => setShowSplash(false), 3000);
+    return () => clearTimeout(splashTimer);
+  }, []);
 
 
   useEffect(() => {
@@ -312,6 +319,10 @@ export default function Home() {
       });
     }
   };
+  
+  if (showSplash) {
+    return <SplashScreen />;
+  }
 
   if (isUserLoading || !user) {
     return (
