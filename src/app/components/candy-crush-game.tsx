@@ -14,12 +14,12 @@ type AdPlayerProps = {
 };
 
 const rewardTiers = [
-  { time: 60, reward: 50, ads: 10, name: "Quick Start" },     // 1 min
-  { time: 300, reward: 100, ads: 20, name: "Ad Marathoner" },  // 5 mins
-  { time: 1800, reward: 400, ads: 30, name: "Super Streamer" },// 30 mins
-  { time: 7200, reward: 1500, name: "Video Virtuoso" }, // 120 mins
-  { time: 18000, reward: 2000, name: "Ad Admiral" },     // 300 mins
-  { time: 180000, reward: 100000, name: "Diamond Legend" }, // 3000 mins
+  { time: 60, reward: 50, ads: 10, name: "Quick Start" },
+  { time: 300, reward: 100, ads: 20, name: "Ad Marathoner" },
+  { time: 1800, reward: 400, ads: 30, name: "Super Streamer" },
+  { time: 7200, reward: 1500, name: "Video Virtuoso" },
+  { time: 18000, reward: 2000, ads: 50, name: "Ad Admiral" },
+  { time: 180000, reward: 100000, ads: 199, name: "Diamond Legend" },
 ];
 
 const AdPlayerGame = ({ onReward }: AdPlayerProps) => {
