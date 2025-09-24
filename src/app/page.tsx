@@ -180,9 +180,15 @@ export default function Home() {
   const processCashout = (details: PayoutDetails) => {
     setIsCashingOut(true);
     setIsPayoutFormOpen(false);
+    let description = "";
+    if (details.payoutType === 'bank') {
+      description = `Cashing out ₹${inrBalance.toFixed(2)} to ${details.accountHolderName}.`;
+    } else {
+      description = `Cashing out ₹${inrBalance.toFixed(2)} to UPI ID: ${details.upiId}.`;
+    }
     toast({
       title: "Processing Cashout...",
-      description: `Cashing out ₹${inrBalance.toFixed(2)} to ${details.accountHolderName}.`,
+      description: description,
     });
     setTimeout(() => {
       setDiamondBalance(0);
@@ -236,7 +242,7 @@ export default function Home() {
           <DialogHeader>
             <DialogTitle>Enter Payout Details</DialogTitle>
             <DialogDescription>
-              Please provide your bank account information to receive your payment.
+              Choose your preferred payout method and provide the necessary details.
             </DialogDescription>
           </DialogHeader>
           <PayoutForm

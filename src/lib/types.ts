@@ -6,9 +6,17 @@ export type Task = {
   type: 'basic' | 'ad';
 };
 
-export type PayoutDetails = {
+export type BankPayoutDetails = {
+  payoutType: 'bank';
   accountHolderName: string;
   accountNumber: string;
   ifscCode: string;
   bankName: string;
 };
+
+export type UpiPayoutDetails = {
+  payoutType: 'upi';
+  upiId: string;
+};
+
+export type PayoutDetails = BankPayoutDetails | UpiPayoutDetails;

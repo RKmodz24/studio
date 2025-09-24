@@ -13,10 +13,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { PayoutDetails } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 
-const formSchema = z.object({
+const bankSchema = z.object({
+  payoutType: z.literal("bank"),
   accountHolderName: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
@@ -31,6 +33,18 @@ const formSchema = z.object({
   }),
 });
 
+const upiSchema = z.object({
+  payoutType: z.literal("upi"),
+  upiId: z.string().regex(/^[\w.-]+@[\w.-]+$/, {
+    message: "Enter a valid UPI ID.",
+  }),
+});
+
+const formSchema = z.discriminatedUnion("payoutType", [
+    bankSchema,
+    upiSchema,
+]);
+
 type PayoutFormProps = {
   amount: number;
   onSubmit: (details: PayoutDetails) => void;
@@ -41,10 +55,12 @@ const PayoutForm = ({ amount, onSubmit, isProcessing }: PayoutFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      payoutType: "bank",
       accountHolderName: "",
       accountNumber: "",
       ifscCode: "",
       bankName: "",
+      upiId: "",
     },
   });
 
@@ -55,60 +71,87 @@ const PayoutForm = ({ amount, onSubmit, isProcessing }: PayoutFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="accountHolderName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Account Holder Name</FormLabel>
-              <FormControl>
-                <Input placeholder="John Doe" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="bankName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bank Name</FormLabel>
-              <FormControl>
-                <Input placeholder="State Bank of India" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex space-x-4">
+        <Tabs
+            defaultValue="bank"
+            className="w-full"
+            onValueChange={(value) => form.setValue("payoutType", value as "bank" | "upi")}
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="bank">Bank Transfer</TabsTrigger>
+            <TabsTrigger value="upi">UPI / Paytm</TabsTrigger>
+          </TabsList>
+          <TabsContent value="bank" className="space-y-4 pt-4">
             <FormField
-            control={form.control}
-            name="accountNumber"
-            render={({ field }) => (
-                <FormItem className="w-1/2">
-                <FormLabel>Account Number</FormLabel>
-                <FormControl>
-                    <Input placeholder="1234567890" {...field} />
-                </FormControl>
-                <FormMessage />
+              control={form.control}
+              name="accountHolderName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Account Holder Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
-            )}
+              )}
             />
             <FormField
-            control={form.control}
-            name="ifscCode"
-            render={({ field }) => (
-                <FormItem className="w-1/2">
-                <FormLabel>IFSC Code</FormLabel>
-                <FormControl>
-                    <Input placeholder="SBIN0001234" {...field} />
-                </FormControl>
-                <FormMessage />
+              control={form.control}
+              name="bankName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bank Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="State Bank of India" {...field} />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
-            )}
+              )}
             />
-        </div>
+            <div className="flex space-x-4">
+                <FormField
+                control={form.control}
+                name="accountNumber"
+                render={({ field }) => (
+                    <FormItem className="w-1/2">
+                    <FormLabel>Account Number</FormLabel>
+                    <FormControl>
+                        <Input placeholder="1234567890" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="ifscCode"
+                render={({ field }) => (
+                    <FormItem className="w-1/2">
+                    <FormLabel>IFSC Code</FormLabel>
+                    <FormControl>
+                        <Input placeholder="SBIN0001234" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
+          </TabsContent>
+          <TabsContent value="upi" className="space-y-4 pt-4">
+            <FormField
+              control={form.control}
+              name="upiId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>UPI ID</FormLabel>
+                  <FormControl>
+                    <Input placeholder="yourname@upi" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+        </Tabs>
         
         <Button type="submit" className="w-full" disabled={isProcessing}>
           {isProcessing ? (
