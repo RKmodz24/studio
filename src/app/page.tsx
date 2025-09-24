@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth, useUser } from "@/firebase";
+import { signOut } from "firebase/auth";
 import { intelligentAdServing } from "@/ai/flows/intelligent-ad-serving";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -10,9 +13,10 @@ import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
 import LifetimeEarningsCard from "./components/lifetime-earnings-card";
 import ReferralCard from "./components/referral-card";
-import { Gem, Gift, Loader2 } from "lucide-react";
+import { Gem, Gift, Loader2, LogOut } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
@@ -73,6 +77,10 @@ function generateReferralCode() {
 
 
 export default function Home() {
+  const router = useRouter();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  
   const [diamondBalance, setDiamondBalance] = useState(0);
   const [lifetimeEarnings, setLifetimeEarnings] = useState(0);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
@@ -84,6 +92,12 @@ export default function Home() {
   const [referralCode, setReferralCode] = useState('');
   const [referralCount, setReferralCount] = useState(0);
   const [commissionEarned, setCommissionEarned] = useState(0);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [isUserLoading, user, router]);
 
   useEffect(() => {
     setReferralCode(generateReferralCode());
@@ -239,17 +253,55 @@ export default function Home() {
         description: "Your cashout request has been processed.",
       });
     }, 2000);
+  };
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (error) {
+      console.error("Error signing out: ", error);
+      toast({
+        variant: "destructive",
+        title: "Sign Out Failed",
+        description: "An error occurred while signing out. Please try again.",
+      });
+    }
+  };
+
+  if (isUserLoading || !user) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
+        <div className="w-full max-w-md space-y-6">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-40 w-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-1/3" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+          </div>
+        </div>
+      </main>
+    );
   }
 
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md space-y-6">
-        <header className="flex items-center justify-center space-x-3 text-center">
-          <Gem className="h-8 w-8 text-primary" />
-          <h1 className="font-headline text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200">
-            Diamond Digger
-          </h1>
+        <header className="flex items-center justify-between">
+          <div className="flex items-center space-x-3 text-center">
+            <Gem className="h-8 w-8 text-primary" />
+            <h1 className="font-headline text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200">
+              Diamond Digger
+            </h1>
+          </div>
+          <Button variant="ghost" size="icon" onClick={handleSignOut}>
+            <LogOut className="h-5 w-5" />
+          </Button>
         </header>
 
         <LifetimeEarningsCard lifetimeEarnings={lifetimeEarnings} />
