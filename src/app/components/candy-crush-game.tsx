@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Gem, Crown, Trophy, Clock } from 'lucide-react';
+import { Gem, Crown, Trophy, Clock, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from "@/components/ui/progress";
@@ -27,16 +27,17 @@ const CandyCrushGame = ({ onReward }: CandyCrushGameProps) => {
   const { toast } = useToast();
   const [grid, setGrid] = useState<string[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
   const [totalPlayTime, setTotalPlayTime] = useState(0);
   const [claimedTiers, setClaimedTiers] = useState<number[]>([]);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Generate initial grid
+  const createGrid = () => Array.from({ length: gridSize * gridSize }, () => candyIcons[Math.floor(Math.random() * candyIcons.length)]);
+
   useEffect(() => {
-    setGrid(Array.from({ length: gridSize * gridSize }, () => candyIcons[Math.floor(Math.random() * candyIcons.length)]));
+    setGrid(createGrid());
   }, []);
   
-  // Game timer
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
@@ -45,7 +46,6 @@ const CandyCrushGame = ({ onReward }: CandyCrushGameProps) => {
     return () => clearInterval(timer);
   }, [isPaused]);
 
-  // Check for rewards
   useEffect(() => {
     rewardTiers.forEach((tier, index) => {
       if (totalPlayTime >= tier.time && !claimedTiers.includes(index)) {
@@ -67,17 +67,38 @@ const CandyCrushGame = ({ onReward }: CandyCrushGameProps) => {
     if (selected === null) {
       setSelected(index);
     } else {
-      // Simplistic swap and match logic
-      const newGrid = [...grid];
-      [newGrid[selected], newGrid[index]] = [newGrid[index], newGrid[selected]]; // Swap
+      const isAdjacent = 
+        Math.abs(selected - index) === 1 || // Horizontal
+        Math.abs(selected - index) === gridSize; // Vertical
       
-      // Very basic "match" simulation: just randomize some tiles
-      for(let i=0; i<5; i++){
-        const randomIndex = Math.floor(Math.random() * newGrid.length);
-        newGrid[randomIndex] = candyIcons[Math.floor(Math.random() * candyIcons.length)];
+      if (!isAdjacent) {
+        setSelected(index); // It's not adjacent, just select the new one
+        return;
       }
+      
+      // Swap candies
+      const newGrid = [...grid];
+      [newGrid[selected], newGrid[index]] = [newGrid[index], newGrid[selected]];
 
-      setGrid(newGrid);
+      // Simulate a successful match ~50% of the time
+      if (Math.random() > 0.5) {
+        setScore(prev => prev + 10);
+        // Replace "matched" candies with new random ones
+        newGrid[selected] = candyIcons[Math.floor(Math.random() * candyIcons.length)];
+        newGrid[index] = candyIcons[Math.floor(Math.random() * candyIcons.length)];
+        setGrid(newGrid);
+      } else {
+        // No match, swap them back visually after a short delay
+        setGrid(newGrid);
+        setTimeout(() => {
+            setGrid(prevGrid => {
+                const revertGrid = [...prevGrid];
+                [revertGrid[selected], revertGrid[index]] = [revertGrid[index], revertGrid[selected]];
+                return revertGrid;
+            });
+        }, 300);
+      }
+      
       setSelected(null);
     }
   };
@@ -103,22 +124,24 @@ const CandyCrushGame = ({ onReward }: CandyCrushGameProps) => {
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4 p-4 bg-blue-50 dark:bg-gray-900 rounded-lg">
-      <div className="w-full grid grid-cols-2 gap-4 text-center">
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"><Clock className="mr-1 h-4 w-4"/>Total Playtime</p>
-          <p className="text-2xl font-bold font-mono">{formatTime(totalPlayTime)}</p>
+      <div className="w-full grid grid-cols-3 gap-2 text-center text-xs">
+        <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow">
+          <p className="font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"><Clock className="mr-1 h-3 w-3"/>Time</p>
+          <p className="text-xl font-bold font-mono">{formatTime(totalPlayTime)}</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"><Trophy className="mr-1 h-4 w-4"/>Next Reward</p>
-          <div className="text-2xl font-bold flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow">
+          <p className="font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"><Star className="mr-1 h-3 w-3"/>Score</p>
+          <p className="text-xl font-bold font-mono">{score}</p>
+        </div>
+        <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow">
+          <p className="font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"><Trophy className="mr-1 h-3 w-3"/>Next Tier</p>
+          <div className="text-xl font-bold flex items-center justify-center">
             {nextTier ? (
                 <>
-                {nextTier.reward} <Gem className="ml-1 h-5 w-5 text-blue-400" />
+                {nextTier.reward} <Gem className="ml-1 h-4 w-4 text-blue-400" />
                 </>
             ): (
-                <>
-                All Clear! <Crown className="ml-1 h-5 w-5 text-yellow-500" />
-                </>
+                <Crown className="h-5 w-5 text-yellow-500" />
             )}
             </div>
         </div>
@@ -126,19 +149,19 @@ const CandyCrushGame = ({ onReward }: CandyCrushGameProps) => {
       
       {nextTier && (
           <div className="w-full px-2">
-            <Progress value={progressToNextTier} className="h-3" />
+            <Progress value={progressToNextTier} className="h-2" />
             <p className="text-xs text-center mt-1 text-muted-foreground">Next reward at {formatTime(nextTier.time)}</p>
         </div>
       )}
 
-
-      <div className={cn("grid gap-1 p-2 bg-blue-200 dark:bg-blue-900/30 rounded-lg shadow-inner", `grid-cols-8`)}>
+      <div className={cn("grid gap-1 p-2 bg-blue-200 dark:bg-blue-900/30 rounded-lg shadow-inner", `grid-cols-${gridSize}`)}>
         {grid.map((icon, index) => (
           <div 
             key={index} 
             className={cn(
                 "flex items-center justify-center h-8 w-8 rounded-md text-xl cursor-pointer transition-transform duration-200",
-                selected === index ? 'bg-yellow-300 scale-110' : 'bg-white/50 dark:bg-gray-800/50'
+                selected === index ? 'bg-yellow-300 scale-110 shadow-lg' : 'bg-white/50 dark:bg-gray-800/50',
+                "hover:scale-110 hover:bg-white/80"
             )}
             onClick={() => handleCandyClick(index)}
           >
