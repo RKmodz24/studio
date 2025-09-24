@@ -17,7 +17,7 @@ import { Gem, Gift, Loader2, LogOut } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import CandyCrushGame from "./components/candy-crush-game";
+import AdPlayerGame from "./components/candy-crush-game";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
@@ -32,7 +32,7 @@ const initialTasks: Task[] = [
     { id: "6", title: "Share app with a friend", reward: 300, completed: false, type: "basic" },
     { id: "7", title: "Watch a partner ad", reward: 250, completed: false, type: "ad" },
     { id: "8", title: "Follow us on social media", reward: 150, completed: false, type: "basic" },
-    { id: "9", title: "Play a mini-game", reward: 50, completed: false, type: "basic" },
+    { id: '47', title: 'Play Ad Game', reward: 0, completed: false, type: 'game' },
     { id: "10", title: "Watch a tutorial video", reward: 200, completed: false, type: "ad" },
     { id: "11", title: "Enable push notifications", reward: 400, completed: false, type: "basic" },
     { id: "12", title: "Complete your profile", reward: 200, completed: false, type: "basic" },
@@ -70,7 +70,7 @@ const initialTasks: Task[] = [
     { id: "44", title: "Test a new game", reward: 800, completed: false, type: 'basic' },
     { id: "45", title: "Complete all daily tasks", reward: 1500, completed: false, type: 'basic' },
     { id: '46', title: 'Apply a referral code', reward: 500, completed: false, type: 'basic' },
-    { id: '47', title: 'Play Candy Crush', reward: 0, completed: false, type: 'game' },
+    
 ];
 
 function generateReferralCode() {
@@ -370,12 +370,12 @@ export default function Home() {
       <Dialog open={isGameOpen} onOpenChange={setIsGameOpen}>
         <DialogContent className="max-w-sm">
             <DialogHeader>
-                <DialogTitle>Candy Crush Game</DialogTitle>
+                <DialogTitle>Ad Game</DialogTitle>
                 <DialogDescription>
-                    The longer you play, the more you earn! Rewards are credited automatically.
+                    The longer you watch, the more you earn! Rewards are credited automatically.
                 </DialogDescription>
             </DialogHeader>
-            <CandyCrushGame onReward={handleGameReward} />
+            <AdPlayerGame onReward={handleGameReward} />
         </DialogContent>
       </Dialog>
     </main>
