@@ -87,7 +87,9 @@ const SplashScreen = () => {
             "absolute inset-0 flex items-center justify-center transition-all duration-500",
             animationStep === 2 ? 'opacity-100 animate-diamond-reveal' : 'opacity-0'
         )}>
-            <Gem className="h-10 w-10 text-primary animate-pulse" />
+            <div className={cn(animationStep === 2 ? "animate-coin-flip" : "")}>
+              <Gem className="h-10 w-10 text-primary animate-pulse" />
+            </div>
         </div>
       </div>
 
@@ -105,8 +107,16 @@ const SplashScreen = () => {
           100% { transform: translateY(0); }
         }
         @keyframes diamond-reveal {
-          0% { transform: translateY(10px) scale(0.8); opacity: 0; }
+          0% { transform: translateY(20px) scale(0); opacity: 0; }
           100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        @keyframes coin-flip {
+          0% {
+            transform: translateY(10px) rotateY(0deg);
+          }
+          100% {
+            transform: translateY(0) rotateY(1080deg);
+          }
         }
         @keyframes fadeInUp {
           0% { opacity: 0; transform: translateY(20px); }
@@ -115,6 +125,7 @@ const SplashScreen = () => {
         .animate-chest-lid-open { animation: chest-lid-open 1s ease-in-out forwards; }
         .animate-chest-base-down { animation: chest-base-down 0.5s ease-in-out forwards; }
         .animate-diamond-reveal { animation: diamond-reveal 0.5s ease-out forwards; }
+        .animate-coin-flip { animation: coin-flip 1s ease-out; }
         .animate-fadeInUp {
           animation: fadeInUp 1s ease-out 1.8s forwards;
           opacity: 0; 
@@ -138,3 +149,4 @@ const SplashScreen = () => {
 };
 
 export default SplashScreen;
+
