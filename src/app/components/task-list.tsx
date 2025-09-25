@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Gem, PlayCircle, Gamepad2 } from "lucide-react";
+import { CheckCircle2, Gem, PlayCircle, Gamepad2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
 import { copy } from "@/lib/locales";
@@ -9,17 +9,18 @@ import { copy } from "@/lib/locales";
 type TaskListProps = {
   tasks: Task[];
   onCompleteTask: (taskId: string, reward: number, type: Task['type']) => void;
+  listId: string;
 };
 
-const TaskList = ({ tasks, onCompleteTask }: TaskListProps) => {
+const TaskList = ({ tasks, onCompleteTask, listId }: TaskListProps) => {
   return (
     <div className="space-y-3">
       {tasks.map((task) => (
         <Card
-          key={task.id}
+          key={`${listId}-${task.id}`}
           className={cn(
             "transition-all duration-500 ease-in-out",
-            task.completed
+            task.status === 'completed'
               ? "opacity-0 scale-95 -translate-y-4 max-h-0 py-0"
               : "opacity-100 scale-100 translate-y-0 max-h-32 py-4"
           )}
@@ -28,14 +29,14 @@ const TaskList = ({ tasks, onCompleteTask }: TaskListProps) => {
             <div className="flex items-center space-x-4">
               <div className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-lg",
-                  task.completed ? "bg-gray-200 dark:bg-gray-700" : "bg-primary/10"
+                  task.status !== 'incomplete' ? "bg-gray-200 dark:bg-gray-700" : "bg-primary/10"
               )}>
                 {task.type === 'ad' ? (
-                  <PlayCircle className={cn("h-6 w-6", task.completed ? "text-gray-500" : "text-primary")} />
+                  <PlayCircle className={cn("h-6 w-6", task.status !== 'incomplete' ? "text-gray-500" : "text-primary")} />
                 ) : task.type === 'game' ? (
-                    <Gamepad2 className={cn("h-6 w-6", task.completed ? "text-gray-500" : "text-primary")} />
+                    <Gamepad2 className={cn("h-6 w-6", task.status !== 'incomplete' ? "text-gray-500" : "text-primary")} />
                 ) : (
-                  <Gem className={cn("h-6 w-6", task.completed ? "text-gray-500" : "text-primary")} />
+                  <Gem className={cn("h-6 w-6", task.status !== 'incomplete' ? "text-gray-500" : "text-primary")} />
                 )}
               </div>
               <div>
@@ -48,15 +49,20 @@ const TaskList = ({ tasks, onCompleteTask }: TaskListProps) => {
             </div>
             <Button
               size="sm"
-              variant={task.completed ? "secondary" : "default"}
+              variant={task.status !== 'incomplete' ? "secondary" : "default"}
               onClick={() => onCompleteTask(task.id, task.reward, task.type)}
-              disabled={task.completed}
+              disabled={task.status !== 'incomplete'}
               className="w-28"
             >
-              {task.completed ? (
+              {task.status === 'completed' ? (
                 <>
                   <CheckCircle2 className="mr-2 h-4 w-4" />
                   {copy.tasks.done}
+                </>
+              ) : task.status === 'processing' ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {copy.tasks.processing}
                 </>
               ) : (
                 task.type === 'game' ? copy.tasks.play : copy.tasks.complete

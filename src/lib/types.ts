@@ -2,7 +2,8 @@ export type Task = {
   id: string;
   title: string;
   reward: number;
-  completed: boolean;
+  completed: boolean; // Note: completed is being deprecated in favor of status
+  status: 'incomplete' | 'processing' | 'completed';
   type: 'basic' | 'ad' | 'game';
 };
 
