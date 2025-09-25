@@ -279,8 +279,10 @@ export default function Home() {
     let description = "";
     if (details.payoutType === 'bank') {
       description = copy.toasts.cashoutProcessingBank(amountToCashout, details.accountHolderName);
-    } else {
+    } else if (details.payoutType === 'upi') {
       description = copy.toasts.cashoutProcessingUpi(amountToCashout, details.upiId);
+    } else if (details.payoutType === 'paypal') {
+        description = copy.toasts.cashoutProcessingPayPal(amountToCashout, details.paypalEmail);
     }
     toast({
       title: copy.toasts.cashoutProcessing,

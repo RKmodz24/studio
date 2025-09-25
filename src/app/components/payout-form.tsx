@@ -46,9 +46,18 @@ const upiSchema = z.object({
   rememberDetails: z.boolean().default(false),
 });
 
+const paypalSchema = z.object({
+    payoutType: z.literal("paypal"),
+    paypalEmail: z.string().email({
+        message: copy.payoutForm.errors.paypalEmail,
+    }),
+    rememberDetails: z.boolean().default(false),
+});
+
 const formSchema = z.discriminatedUnion("payoutType", [
     bankSchema,
     upiSchema,
+    paypalSchema,
 ]);
 
 type PayoutFormProps = {
@@ -67,6 +76,7 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
     ifscCode: savedDetails.payoutType === 'bank' ? savedDetails.ifscCode : '',
     bankName: savedDetails.payoutType === 'bank' ? savedDetails.bankName : '',
     upiId: savedDetails.payoutType === 'upi' ? savedDetails.upiId : '',
+    paypalEmail: savedDetails.payoutType === 'paypal' ? savedDetails.paypalEmail : '',
   } : {
       payoutType: "bank" as const,
       accountHolderName: "",
@@ -74,6 +84,7 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
       ifscCode: "",
       bankName: "",
       upiId: "",
+      paypalEmail: "",
       rememberDetails: false,
   };
 
@@ -92,11 +103,12 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
         <Tabs
             defaultValue={savedDetails?.payoutType || "bank"}
             className="w-full"
-            onValueChange={(value) => form.setValue("payoutType", value as "bank" | "upi")}
+            onValueChange={(value) => form.setValue("payoutType", value as "bank" | "upi" | "paypal")}
         >
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="bank">{copy.payoutForm.bankTransfer}</TabsTrigger>
             <TabsTrigger value="upi">{copy.payoutForm.upiPaytm}</TabsTrigger>
+            <TabsTrigger value="paypal">{copy.payoutForm.paypal}</TabsTrigger>
           </TabsList>
           <TabsContent value="bank" className="space-y-4 pt-4">
             <FormField
@@ -168,6 +180,21 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
                 </FormItem>
               )}
             />
+          </TabsContent>
+          <TabsContent value="paypal" className="space-y-4 pt-4">
+             <FormField
+                control={form.control}
+                name="paypalEmail"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>{copy.payoutForm.paypalEmail}</FormLabel>
+                    <FormControl>
+                        <Input placeholder={copy.payoutForm.paypalEmailPlaceholder} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
           </TabsContent>
         </Tabs>
         

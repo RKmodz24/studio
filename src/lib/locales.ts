@@ -68,6 +68,7 @@ export const copy = {
   payoutForm: {
     bankTransfer: "Bank Transfer",
     upiPaytm: "UPI / Paytm",
+    paypal: "PayPal",
     accountHolderName: "Account Holder Name",
     accountHolderNamePlaceholder: "John Doe",
     bankName: "Bank Name",
@@ -78,6 +79,8 @@ export const copy = {
     ifscCodePlaceholder: "SBIN0001234",
     upiId: "UPI ID",
     upiIdPlaceholder: "yourname@upi",
+    paypalEmail: "PayPal Email",
+    paypalEmailPlaceholder: "your.email@example.com",
     rememberDetails: "Save these details for future payouts",
     rememberDetailsDescription: "Your payout information will be pre-filled next time.",
     errors: {
@@ -86,6 +89,7 @@ export const copy = {
         ifsc: "Enter a valid IFSC code.",
         bankName: "Bank name seems too short.",
         upi: "Enter a valid UPI ID.",
+        paypalEmail: "Enter a valid PayPal email address.",
     }
   },
   splash: {
@@ -110,6 +114,7 @@ export const copy = {
     cashoutProcessing: "Processing Cashout...",
     cashoutProcessingBank: (amount: number, name: string) => `Cashing out ₹${amount.toFixed(2)} to ${name}.`,
     cashoutProcessingUpi: (amount: number, upi: string) => `Cashing out ₹${amount.toFixed(2)} to UPI ID: ${upi}.`,
+    cashoutProcessingPayPal: (amount: number, email: string) => `Cashing out ₹${amount.toFixed(2)} to PayPal: ${email}.`,
     cashoutSuccess: "Success!",
     cashoutSuccessDescription: "Your cashout request has been processed.",
   }

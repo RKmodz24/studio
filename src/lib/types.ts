@@ -20,4 +20,9 @@ export type UpiPayoutDetails = {
   upiId: string;
 };
 
-export type PayoutDetails = BankPayoutDetails | UpiPayoutDetails;
+export type PayPalPayoutDetails = {
+  payoutType: 'paypal';
+  paypalEmail: string;
+};
+
+export type PayoutDetails = BankPayoutDetails | UpiPayoutDetails | PayPalPayoutDetails;
