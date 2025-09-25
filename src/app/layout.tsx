@@ -1,10 +1,12 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { copy } from '@/lib/locales';
 
 export const metadata: Metadata = {
-  title: 'Diamond Digger',
-  description: 'Complete tasks, earn diamonds, and cash out!',
+  title: copy.appName,
+  description: copy.appDescription,
 };
 
 export default function RootLayout({

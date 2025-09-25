@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -18,20 +19,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { PayoutDetails } from "@/lib/types";
 import { Loader2 } from "lucide-react";
+import { copy } from "@/lib/locales";
 
 const bankSchema = z.object({
   payoutType: z.literal("bank"),
   accountHolderName: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
+    message: copy.payoutForm.errors.name,
   }),
   accountNumber: z.string().regex(/^\d{9,18}$/, {
-    message: "Enter a valid account number.",
+    message: copy.payoutForm.errors.accountNumber,
   }),
   ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, {
-    message: "Enter a valid IFSC code.",
+    message: copy.payoutForm.errors.ifsc,
   }),
   bankName: z.string().min(3, {
-    message: "Bank name seems too short.",
+    message: copy.payoutForm.errors.bankName,
   }),
   rememberDetails: z.boolean().default(false),
 });
@@ -39,7 +41,7 @@ const bankSchema = z.object({
 const upiSchema = z.object({
   payoutType: z.literal("upi"),
   upiId: z.string().regex(/^[\w.-]+@[\w.-]+$/, {
-    message: "Enter a valid UPI ID.",
+    message: copy.payoutForm.errors.upi,
   }),
   rememberDetails: z.boolean().default(false),
 });
@@ -93,8 +95,8 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
             onValueChange={(value) => form.setValue("payoutType", value as "bank" | "upi")}
         >
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="bank">Bank Transfer</TabsTrigger>
-            <TabsTrigger value="upi">UPI / Paytm</TabsTrigger>
+            <TabsTrigger value="bank">{copy.payoutForm.bankTransfer}</TabsTrigger>
+            <TabsTrigger value="upi">{copy.payoutForm.upiPaytm}</TabsTrigger>
           </TabsList>
           <TabsContent value="bank" className="space-y-4 pt-4">
             <FormField
@@ -102,9 +104,9 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
               name="accountHolderName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Account Holder Name</FormLabel>
+                  <FormLabel>{copy.payoutForm.accountHolderName}</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder={copy.payoutForm.accountHolderNamePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,9 +117,9 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
               name="bankName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bank Name</FormLabel>
+                  <FormLabel>{copy.payoutForm.bankName}</FormLabel>
                   <FormControl>
-                    <Input placeholder="State Bank of India" {...field} />
+                    <Input placeholder={copy.payoutForm.bankNamePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,9 +131,9 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
                 name="accountNumber"
                 render={({ field }) => (
                     <FormItem className="w-1/2">
-                    <FormLabel>Account Number</FormLabel>
+                    <FormLabel>{copy.payoutForm.accountNumber}</FormLabel>
                     <FormControl>
-                        <Input placeholder="1234567890" {...field} />
+                        <Input placeholder={copy.payoutForm.accountNumberPlaceholder} {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -142,9 +144,9 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
                 name="ifscCode"
                 render={({ field }) => (
                     <FormItem className="w-1/2">
-                    <FormLabel>IFSC Code</FormLabel>
+                    <FormLabel>{copy.payoutForm.ifscCode}</FormLabel>
                     <FormControl>
-                        <Input placeholder="SBIN0001234" {...field} />
+                        <Input placeholder={copy.payoutForm.ifscCodePlaceholder} {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -158,9 +160,9 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
               name="upiId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>UPI ID</FormLabel>
+                  <FormLabel>{copy.payoutForm.upiId}</FormLabel>
                   <FormControl>
-                    <Input placeholder="yourname@upi" {...field} />
+                    <Input placeholder={copy.payoutForm.upiIdPlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,10 +184,10 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel>
-                  Save these details for future payouts
+                  {copy.payoutForm.rememberDetails}
                 </FormLabel>
                 <FormDescription>
-                  Your payout information will be pre-filled next time.
+                  {copy.payoutForm.rememberDetailsDescription}
                 </FormDescription>
               </div>
             </FormItem>
@@ -196,10 +198,10 @@ const PayoutForm = ({ amount, onSubmit, isProcessing, savedDetails }: PayoutForm
           {isProcessing ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
+              {copy.cashout.payoutProcessing}
             </>
           ) : (
-            `Request Payout of ₹${amount.toFixed(2)}`
+            copy.cashout.payoutRequest(amount)
           )}
         </Button>
       </form>

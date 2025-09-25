@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Copy, Users, Award } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { copy } from "@/lib/locales";
 
 export default function ReferPage() {
   const router = useRouter();
@@ -27,7 +29,7 @@ export default function ReferPage() {
 
     if (storedCode) {
       setReferralCode(storedCode);
-      const baseUrl = "https://reward-studio-1758733731042.cluster-44kx2eiocbhe2tyk3zoyo3ryuo.cloudworkstations.dev";
+      const baseUrl = "https://diamond-digger-app.apphosting.dev";
       setReferralLink(`${baseUrl}/?ref=${storedCode}`);
     }
     if (storedCount) {
@@ -42,8 +44,8 @@ export default function ReferPage() {
   const handleCopy = (textToCopy: string, type: 'code' | 'link') => {
     navigator.clipboard.writeText(textToCopy);
     toast({
-      title: "Copied!",
-      description: `Referral ${type} copied to clipboard.`,
+      title: copy.referral.copied,
+      description: copy.referral.copiedDescription(type),
     });
   };
 
@@ -54,7 +56,7 @@ export default function ReferPage() {
           <Button variant="ghost" size="icon" className="absolute left-0" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="font-headline text-2xl font-bold">Refer & Earn</h1>
+          <h1 className="font-headline text-2xl font-bold">{copy.referral.title}</h1>
         </header>
 
         {isLoading ? (
@@ -87,12 +89,12 @@ export default function ReferPage() {
         ) : (
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="font-headline">Invite Friends</CardTitle>
-              <CardDescription>Earn 20% of their earnings forever!</CardDescription>
+              <CardTitle className="font-headline">{copy.referral.title}</CardTitle>
+              <CardDescription>{copy.referral.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Your Referral Code</label>
+                  <label className="text-sm font-medium text-muted-foreground">{copy.referral.codeLabel}</label>
                   <div className="flex items-center justify-between rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
                     <span className="font-mono text-lg font-semibold text-primary">{referralCode}</span>
                     <Button variant="ghost" size="icon" onClick={() => handleCopy(referralCode, 'code')}>
@@ -101,7 +103,7 @@ export default function ReferPage() {
                   </div>
               </div>
               <div className="space-y-2">
-                  <label htmlFor="referralLink" className="text-sm font-medium text-muted-foreground">Your Referral Link</label>
+                  <label htmlFor="referralLink" className="text-sm font-medium text-muted-foreground">{copy.referral.linkLabel}</label>
                   <div className="flex items-center space-x-2">
                       <Input id="referralLink" value={referralLink} readOnly className="bg-gray-100 dark:bg-gray-800" />
                       <Button variant="outline" size="icon" onClick={() => handleCopy(referralLink, 'link')}>
@@ -114,14 +116,14 @@ export default function ReferPage() {
                       <Users className="h-6 w-6 text-muted-foreground" />
                       <div>
                           <p className="font-bold text-xl">{referralCount}</p>
-                          <p className="text-xs text-muted-foreground">Referrals</p>
+                          <p className="text-xs text-muted-foreground">{copy.referral.referrals}</p>
                       </div>
                   </div>
                   <div className="flex items-center space-x-2">
                       <Award className="h-6 w-6 text-muted-foreground" />
                       <div>
                           <p className="font-bold text-xl">₹{commissionEarned.toFixed(2)}</p>
-                          <p className="text-xs text-muted-foreground">Commission</p>
+                          <p className="text-xs text-muted-foreground">{copy.referral.commission}</p>
                       </div>
                   </div>
               </div>

@@ -1,8 +1,10 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Gem, PlayCircle, Gamepad2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
+import { copy } from "@/lib/locales";
 
 type TaskListProps = {
   tasks: Task[];
@@ -52,10 +54,10 @@ const TaskList = ({ tasks, onCompleteTask }: TaskListProps) => {
               {task.completed ? (
                 <>
                   <CheckCircle2 className="mr-2 h-4 w-4" />
-                  Done
+                  {copy.tasks.done}
                 </>
               ) : (
-                task.type === 'game' ? "Play" : "Complete"
+                task.type === 'game' ? copy.tasks.play : copy.tasks.complete
               )}
             </Button>
           </CardContent>

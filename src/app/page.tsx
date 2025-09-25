@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
@@ -15,6 +16,7 @@ import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import AdPlayerGame from "./components/candy-crush-game";
 import SplashScreen from "./components/splash-screen";
+import { copy } from "@/lib/locales";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
@@ -140,10 +142,10 @@ export default function Home() {
         currentTasks.map(t => (t.id === taskId ? { ...t, completed: true } : t))
       );
       toast({
-        title: "Task Completed!",
+        title: copy.tasks.taskCompleted,
         description: (
           <div className="flex items-center">
-            You've earned {reward} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+            {copy.tasks.taskEarned(reward)} <Gem className="ml-1 h-4 w-4 text-blue-400" />
           </div>
         ),
       });
@@ -160,8 +162,8 @@ export default function Home() {
             return newCommission;
         });
         toast({
-          title: "Referral Bonus!",
-          description: `You earned ${commission} diamonds from a referral's activity.`,
+          title: copy.toasts.referralBonus,
+          description: copy.toasts.referralBonusDescription(commission),
         });
       }
 
@@ -174,14 +176,14 @@ export default function Home() {
             return newCount;
         });
         toast({
-          title: "Referral Applied!",
-          description: "You've successfully referred a new user!",
+          title: copy.toasts.referralApplied,
+          description: copy.toasts.referralAppliedDescription,
         });
       }
     }
 
     if(type === 'ad'){
-      toast({ title: "Watching ad..." });
+      toast({ title: copy.toasts.watchingAd });
       setTimeout(() => {
         completeTask();
       }, 2000);
@@ -193,7 +195,7 @@ export default function Home() {
   const handleSurpriseBonus = async () => {
     setIsBonusLoading(true);
     const adFrequency = adShownCount < 2 ? "low" : adShownCount < 5 ? "medium" : "high";
-    toast({ title: "Checking for a bonus..." });
+    toast({ title: copy.toasts.bonusCheck });
 
     try {
       const result = await intelligentAdServing({
@@ -205,18 +207,18 @@ export default function Home() {
       if (result.showAd) {
         setAdShownCount((prev) => prev + 1);
         toast({
-          title: "Ad Time!",
-          description: `Reason: ${result.reason}. You will be rewarded after the ad.`,
+          title: copy.toasts.adTime,
+          description: copy.toasts.adTimeDescription(result.reason),
           duration: 3000,
         });
         setTimeout(() => {
           const bonus = Math.floor(Math.random() * 200) + 50;
           addDiamonds(bonus);
           toast({
-            title: "Bonus Awarded!",
+            title: copy.toasts.bonusAwarded,
             description: (
               <div className="flex items-center">
-                You received {bonus} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+                {copy.toasts.bonusReceived(bonus)} <Gem className="ml-1 h-4 w-4 text-blue-400" />
               </div>
             ),
           });
@@ -224,16 +226,16 @@ export default function Home() {
         }, 3000);
       } else {
         toast({
-          title: "No ad this time.",
+          title: copy.toasts.noAd,
           description: result.reason,
         });
         const bonus = Math.floor(Math.random() * 50) + 10;
         addDiamonds(bonus);
         toast({
-          title: "Small Bonus!",
+          title: copy.toasts.smallBonus,
           description: (
              <div className="flex items-center">
-              You received a small bonus of {bonus} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+              {copy.toasts.smallBonusDescription(bonus)} <Gem className="ml-1 h-4 w-4 text-blue-400" />
             </div>
           ),
         });
@@ -243,8 +245,8 @@ export default function Home() {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "Could not contact our ad server.",
+        title: copy.toasts.error,
+        description: copy.toasts.adServerError,
       });
       setIsBonusLoading(false);
     }
@@ -269,12 +271,12 @@ export default function Home() {
     const amountToCashout = inrBalance;
     let description = "";
     if (details.payoutType === 'bank') {
-      description = `Cashing out ₹${amountToCashout.toFixed(2)} to ${details.accountHolderName}.`;
+      description = copy.toasts.cashoutProcessingBank(amountToCashout, details.accountHolderName);
     } else {
-      description = `Cashing out ₹${amountToCashout.toFixed(2)} to UPI ID: ${details.upiId}.`;
+      description = copy.toasts.cashoutProcessingUpi(amountToCashout, details.upiId);
     }
     toast({
-      title: "Processing Cashout...",
+      title: copy.toasts.cashoutProcessing,
       description: description,
     });
     setTimeout(() => {
@@ -288,8 +290,8 @@ export default function Home() {
       setIsCashingOut(false);
       setTasks(initialTasks.map(t => ({...t, completed: false})));
       toast({
-        title: "Success!",
-        description: "Your cashout request has been processed.",
+        title: copy.toasts.cashoutSuccess,
+        description: copy.toasts.cashoutSuccessDescription,
       });
     }, 2000);
   };
@@ -305,7 +307,7 @@ export default function Home() {
           <div className="flex items-center space-x-3 text-center">
             <Gem className="h-8 w-8 text-primary" />
             <h1 className="font-headline text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200">
-              Diamond Digger
+              {copy.appName}
             </h1>
           </div>
         </header>
@@ -320,7 +322,7 @@ export default function Home() {
         
         <Button variant="outline" className="w-full" onClick={() => router.push('/refer')}>
           <Users className="mr-2 h-4 w-4" />
-          Refer & Earn
+          {copy.referral.button}
         </Button>
 
         <CashoutProgress
@@ -333,10 +335,10 @@ export default function Home() {
 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="font-headline text-2xl font-semibold text-gray-700 dark:text-gray-300">Tasks</h2>
+            <h2 className="font-headline text-2xl font-semibold text-gray-700 dark:text-gray-300">{copy.tasks.title}</h2>
              <Button onClick={handleSurpriseBonus} disabled={isBonusLoading}>
               {isBonusLoading ? <Loader2 className="animate-spin" /> : <Gift />}
-              Surprise Bonus
+              {copy.tasks.surpriseBonus}
             </Button>
           </div>
           <TaskList tasks={tasks} onCompleteTask={handleTaskComplete} />
@@ -345,9 +347,9 @@ export default function Home() {
       <Dialog open={isPayoutFormOpen} onOpenChange={setIsPayoutFormOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Enter Payout Details</DialogTitle>
+            <DialogTitle>{copy.cashout.payoutTitle}</DialogTitle>
             <DialogDescription>
-              Choose your preferred payout method and provide the necessary details.
+             {copy.cashout.payoutDescription}
             </DialogDescription>
           </DialogHeader>
           <PayoutForm
@@ -361,9 +363,9 @@ export default function Home() {
       <Dialog open={isGameOpen} onOpenChange={setIsGameOpen}>
         <DialogContent className="max-w-sm">
             <DialogHeader>
-                <DialogTitle>Ad Game</DialogTitle>
+                <DialogTitle>{copy.adGame.title}</DialogTitle>
                 <DialogDescription>
-                    The longer you watch, the more you earn! Rewards are credited automatically.
+                    {copy.adGame.description}
                 </DialogDescription>
             </DialogHeader>
             <AdPlayerGame onReward={handleGameReward} />

@@ -1,8 +1,10 @@
+
 "use client";
 
 import { Gem } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { copy } from "@/lib/locales";
 
 const SplashScreen = () => {
   const [visible, setVisible] = useState(true);
@@ -23,7 +25,7 @@ const SplashScreen = () => {
         <Gem className="h-20 w-20 text-primary animate-pulse" />
       </div>
       <h1 className="mt-6 text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200 animate-fadeInUp">
-        Diamond Digger
+        {copy.splash.title}
       </h1>
       <style jsx>{`
         @keyframes fadeInScale {

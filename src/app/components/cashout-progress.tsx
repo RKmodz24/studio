@@ -1,7 +1,9 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { copy } from "@/lib/locales";
 
 type CashoutProgressProps = {
   progress: number;
@@ -17,8 +19,8 @@ const CashoutProgress = ({ progress, inrBalance, minPayout, onCashout, isCashing
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle className="font-headline">Cashout Progress</CardTitle>
-        <CardDescription>You need ₹{minPayout} to cashout.</CardDescription>
+        <CardTitle className="font-headline">{copy.cashout.title}</CardTitle>
+        <CardDescription>{copy.cashout.description(minPayout)}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -35,9 +37,9 @@ const CashoutProgress = ({ progress, inrBalance, minPayout, onCashout, isCashing
               {isCashingOut ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
+                  {copy.cashout.buttonProcessing}
                 </>
-              ) : "Cashout"}
+              ) : copy.cashout.button}
             </Button>
           </div>
         </div>
