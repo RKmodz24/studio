@@ -11,13 +11,12 @@ import CashoutProgress from "./components/cashout-progress";
 import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
 import LifetimeEarningsCard from "./components/lifetime-earnings-card";
-import { Gem, Gift, Loader2, Users, Clock } from "lucide-react";
+import { Gem, Gift, Loader2, Users, LifeBuoy } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import AdPlayerGame from "./components/candy-crush-game";
 import SplashScreen from "./components/splash-screen";
 import { copy } from "@/lib/locales";
-import AICustomerCare from "./components/ai-customer-care";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
@@ -318,6 +317,10 @@ export default function Home() {
               {copy.appName}
             </h1>
           </div>
+          <Button variant="outline" size="sm" onClick={() => router.push('/support')}>
+             <LifeBuoy className="mr-2 h-4 w-4"/>
+             {copy.support.button}
+          </Button>
         </header>
 
         <LifetimeEarningsCard lifetimeEarnings={lifetimeEarnings} />
@@ -389,7 +392,6 @@ export default function Home() {
             <AdPlayerGame onReward={handleGameReward} />
         </DialogContent>
       </Dialog>
-      <AICustomerCare />
     </main>
   );
 }

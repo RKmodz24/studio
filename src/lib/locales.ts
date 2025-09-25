@@ -31,6 +31,11 @@ export const copy = {
     copied: "Copied!",
     copiedDescription: (type: 'code' | 'link') => `Referral ${type} copied to clipboard.`,
   },
+  support: {
+      button: "Need Help?",
+      title: "AI Customer Support",
+      description: "Have a question about the app? Ask me anything!",
+  },
   tasks: {
     title: "Pending Tasks",
     surpriseBonus: "Surprise Bonus",
@@ -71,7 +76,7 @@ export const copy = {
     accountNumberPlaceholder: "1234567890",
     ifscCode: "IFSC Code",
     ifscCodePlaceholder: "SBIN0001234",
-upiId: "UPI ID",
+    upiId: "UPI ID",
     upiIdPlaceholder: "yourname@upi",
     rememberDetails: "Save these details for future payouts",
     rememberDetailsDescription: "Your payout information will be pre-filled next time.",
