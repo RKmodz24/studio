@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import AdPlayerGame from "./components/candy-crush-game";
 import SplashScreen from "./components/splash-screen";
 import { copy } from "@/lib/locales";
+import AICustomerCare from "./components/ai-customer-care";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 100;
@@ -388,6 +389,7 @@ export default function Home() {
             <AdPlayerGame onReward={handleGameReward} />
         </DialogContent>
       </Dialog>
+      <AICustomerCare />
     </main>
   );
 }
