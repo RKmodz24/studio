@@ -18,11 +18,13 @@ const TaskList = ({ tasks, onCompleteTask }: TaskListProps) => {
         <Card
           key={task.id}
           className={cn(
-            "transition-all duration-500 ease-out",
-            task.completed ? "opacity-50" : "opacity-100"
+            "transition-all duration-500 ease-in-out",
+            task.completed
+              ? "opacity-0 scale-95 -translate-y-4 max-h-0 py-0"
+              : "opacity-100 scale-100 translate-y-0 max-h-32 py-4"
           )}
         >
-          <CardContent className="flex items-center justify-between p-4">
+          <CardContent className="flex items-center justify-between p-0 px-4">
             <div className="flex items-center space-x-4">
               <div className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-lg",
