@@ -48,8 +48,8 @@ const customerCarePrompt = ai.definePrompt({
 
   Conversation History:
   {{#each history}}
-  {{#if (eq role 'user')}}User: {{content}}{{/if}}
-  {{#if (eq role 'model')}}AI: {{content}}{{/if}}
+  {{#if (this.role === 'user')}}User: {{this.content}}{{/if}}
+  {{#if (this.role === 'model')}}AI: {{this.content}}{{/if}}
   {{/each}}
 
   User Query: {{{query}}}
