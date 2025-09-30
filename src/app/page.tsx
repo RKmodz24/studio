@@ -3,7 +3,6 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { intelligentAdServing } from "@/ai/flows/intelligent-ad-serving";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import BalanceCard from "./components/balance-card";
@@ -19,7 +18,7 @@ import SplashScreen from "./components/splash-screen";
 import { copy } from "@/lib/locales";
 
 const DIAMONDS_PER_INR = 100;
-const MINIMUM_PAYOUT_INR = 100;
+const MINIMUM_PAYOUT_INR = 500;
 const REFERRAL_COMMISSION_RATE = 0.20;
 
 const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
@@ -205,11 +204,11 @@ export default function Home() {
     toast({ title: copy.toasts.bonusCheck });
 
     try {
-      const result = await intelligentAdServing({
+      const result = { showAd: false, reason: 'This is a mock response.'};/*await intelligentAdServing({
         userActivity: 'User clicked on "Surprise Bonus"',
         coinBalance: diamondBalance,
         adFrequency: adFrequency,
-      });
+      });*/
 
       if (result.showAd) {
         setAdShownCount((prev) => prev + 1);
@@ -393,3 +392,5 @@ export default function Home() {
     </main>
   );
 }
+
+    
