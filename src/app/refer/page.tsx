@@ -29,7 +29,7 @@ export default function ReferPage() {
 
     if (storedCode) {
       setReferralCode(storedCode);
-      const baseUrl = "https://diamond-digger-app.apphosting.dev";
+      const baseUrl = "https://golden-hours-app.apphosting.dev";
       setReferralLink(`${baseUrl}/?ref=${storedCode}`);
     }
     if (storedCount) {
