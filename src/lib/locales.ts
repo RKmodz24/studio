@@ -31,11 +31,6 @@ export const copy = {
     copied: "Copied!",
     copiedDescription: (type: 'code' | 'link') => `Referral ${type} copied to clipboard.`,
   },
-  support: {
-      button: "Need Help?",
-      title: "AI Customer Support",
-      description: "Have a question about the app? Ask me anything!",
-  },
   tasks: {
     title: "Pending Tasks",
     surpriseBonus: "Surprise Bonus",
