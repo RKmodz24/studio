@@ -53,7 +53,7 @@ export default function ReferPage() {
     <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md space-y-6">
         <header className="relative flex items-center justify-center">
-          <Button variant="ghost" size="icon" className="absolute left-0" onClick={() => router.back()}>
+          <Button variant="ghost" size="icon" className="absolute left-0" onClick={() => router.push('/')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="font-headline text-2xl font-bold">{copy.referral.title}</h1>
