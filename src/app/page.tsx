@@ -17,8 +17,6 @@ import AdPlayerGame from "./components/candy-crush-game";
 import SplashScreen from "./components/splash-screen";
 import { copy } from "@/lib/locales";
 import { useUser, useAuth } from "@/firebase";
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { signInWithGoogle } from "@/firebase/auth";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 500;
@@ -97,21 +95,11 @@ export default function Home() {
   const [commissionEarned, setCommissionEarned] = useState(0);
   const [savedPayoutDetails, setSavedPayoutDetails] = useState<PayoutDetails | null>(null);
   const [showSplash, setShowSplash] = useState(true);
-  const [showSignupPopup, setShowSignupPopup] = useState(false);
 
   useEffect(() => {
     const splashTimer = setTimeout(() => setShowSplash(false), 3000);
     return () => clearTimeout(splashTimer);
   }, []);
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      const popupTimer = setTimeout(() => {
-        setShowSignupPopup(true);
-      }, 3500); // Show after splash screen
-      return () => clearTimeout(popupTimer);
-    }
-  }, [isUserLoading, user]);
 
   useEffect(() => {
     const newReferralCode = generateReferralCode();
@@ -319,42 +307,6 @@ export default function Home() {
     }, 2000);
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    try {
-      await signInWithGoogle(auth, credentialResponse.credential);
-      setShowSignupPopup(false);
-      toast({
-        title: "Signed In",
-        description: "You have successfully signed in with Google.",
-      });
-    } catch (error) {
-      console.error("Google sign-in error", error);
-      toast({
-        variant: "destructive",
-        title: "Sign-in Failed",
-        description: "Could not sign in with Google. Please try again.",
-      });
-    }
-  };
-
-  const GoogleLoginButton = () => (
-    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
-      <GoogleLogin
-        onSuccess={handleGoogleSuccess}
-        onError={() => {
-          console.error("Google login failed");
-          toast({
-            variant: "destructive",
-            title: "Sign-in Failed",
-            description: "Google login failed. Please try again.",
-          });
-        }}
-        useOneTap
-        auto_select
-      />
-    </GoogleOAuthProvider>
-  );
-
   const HomeContent = (
     <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md space-y-6">
@@ -365,6 +317,11 @@ export default function Home() {
               {copy.appName}
             </h1>
           </div>
+          {!isUserLoading && !user && (
+            <Button variant="outline" onClick={() => router.push('/signup')}>
+              Sign Up
+            </Button>
+          )}
         </header>
 
         <LifetimeEarningsCard lifetimeEarnings={lifetimeEarnings} />
@@ -437,22 +394,6 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showSignupPopup} onOpenChange={setShowSignupPopup}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Join Diamond Digger</DialogTitle>
-            <DialogDescription>
-              Sign up to save your progress and cash out your earnings!
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col items-center justify-center space-y-4 pt-4">
-             <GoogleLoginButton />
-             <Button variant="outline" onClick={() => setShowSignupPopup(false)}>
-               Continue as Guest
-             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
   
@@ -466,3 +407,5 @@ export default function Home() {
 
   return HomeContent;
 }
+
+    
