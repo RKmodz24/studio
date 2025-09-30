@@ -26,9 +26,6 @@ const CashoutProgress = ({ progress, inrBalance, minPayout, onCashout, isCashing
         <div className="space-y-4">
           <Progress value={progress} className="h-3" />
           <div className="flex justify-between items-center">
-             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              ₹{inrBalance.toFixed(2)} / <span className="text-primary font-semibold">₹{minPayout.toFixed(2)}</span>
-            </p>
             <Button 
               onClick={onCashout} 
               disabled={!canCashout || isCashingOut}
@@ -41,6 +38,9 @@ const CashoutProgress = ({ progress, inrBalance, minPayout, onCashout, isCashing
                 </>
               ) : copy.cashout.button}
             </Button>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              ₹{inrBalance.toFixed(2)} / <span className="text-primary font-semibold">₹{minPayout.toFixed(2)}</span>
+            </p>
           </div>
         </div>
       </CardContent>
