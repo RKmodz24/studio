@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Gem } from "lucide-react";
+import { CircleDollarSign } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { copy } from "@/lib/locales";
@@ -11,7 +11,7 @@ const SplashScreen = () => {
   const [animationStep, setAnimationStep] = useState(0);
 
   useEffect(() => {
-    const step1 = setTimeout(() => setAnimationStep(1), 500); // Diamond animation
+    const step1 = setTimeout(() => setAnimationStep(1), 500); // Coin animation
     const step2 = setTimeout(() => setAnimationStep(2), 1000); // "Welcome to" animation
     const timer = setTimeout(() => setVisible(false), 3000); // Fade out screen
     return () => {
@@ -34,7 +34,7 @@ const SplashScreen = () => {
             animationStep >= 1 ? 'opacity-100' : 'opacity-0'
         )}>
             <div className={cn(animationStep >= 1 ? "animate-coin-flip" : "")}>
-              <Gem className="h-16 w-16 text-primary animate-pulse" />
+              <CircleDollarSign className="h-16 w-16 text-yellow-500 animate-pulse" />
             </div>
         </div>
       </div>
@@ -88,4 +88,3 @@ const SplashScreen = () => {
 };
 
 export default SplashScreen;
-

@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Gem, Crown, Trophy, Clock, Star, PlayCircle, Loader2 } from 'lucide-react';
+import { CircleDollarSign, Crown, Trophy, Clock, Star, PlayCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from "@/components/ui/progress";
@@ -48,7 +48,7 @@ const AdPlayerGame = ({ onReward }: AdPlayerProps) => {
           title: copy.adGame.milestoneReached,
           description: (
             <div className="flex items-center">
-              {copy.adGame.milestoneReachedDescription(tier.reward, tier.time)} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+              {copy.adGame.milestoneReachedDescription(tier.reward, tier.time)} <CircleDollarSign className="ml-1 h-4 w-4 text-yellow-500" />
             </div>
           ),
         });
@@ -123,7 +123,7 @@ const AdPlayerGame = ({ onReward }: AdPlayerProps) => {
       {nextTier && (
           <div className="w-full px-2">
             <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>{copy.adGame.nextReward} {nextTier.reward} <Gem className="inline-block h-3 w-3 text-blue-400" /></span>
+                <span>{copy.adGame.nextReward} {nextTier.reward} <CircleDollarSign className="inline-block h-3 w-3 text-yellow-500" /></span>
                 <span>{copy.adGame.at} {formatTime(nextTier.time)}</span>
             </div>
             <Progress value={progressToNextTier} className="h-3" />
@@ -139,7 +139,7 @@ const AdPlayerGame = ({ onReward }: AdPlayerProps) => {
         ) : (
             <>
                 <PlayCircle className="mr-2 h-5 w-5" />
-                {copy.adGame.watchAd} (+5 <Gem className="inline-block h-4 w-4" />)
+                {copy.adGame.watchAd} (+5 <CircleDollarSign className="inline-block h-4 w-4" />)
             </>
         )}
       </Button>
@@ -150,7 +150,7 @@ const AdPlayerGame = ({ onReward }: AdPlayerProps) => {
             {rewardTiers.map((tier, index) => (
                 <div key={index} className={cn("flex justify-between items-center p-2 rounded-md text-sm", claimedTiers.includes(index) ? "bg-green-100 dark:bg-green-900/50" : "bg-gray-100 dark:bg-gray-800")}>
                     <p>{tier.name} ({tier.time/60} min)</p>
-                    <p className="font-bold flex items-center">{tier.reward.toLocaleString()} <Gem className="ml-1 h-4 w-4 text-blue-500"/></p>
+                    <p className="font-bold flex items-center">{tier.reward.toLocaleString()} <CircleDollarSign className="ml-1 h-4 w-4 text-yellow-500"/></p>
                 </div>
             ))}
         </div>

@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Gem, PlayCircle, Gamepad2, Loader2 } from "lucide-react";
+import { CheckCircle2, CircleDollarSign, PlayCircle, Gamepad2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
 import { copy } from "@/lib/locales";
@@ -36,14 +36,14 @@ const TaskList = ({ tasks, onCompleteTask, listId }: TaskListProps) => {
                 ) : task.type === 'game' ? (
                     <Gamepad2 className={cn("h-6 w-6", task.status !== 'incomplete' ? "text-gray-500" : "text-primary")} />
                 ) : (
-                  <Gem className={cn("h-6 w-6", task.status !== 'incomplete' ? "text-gray-500" : "text-primary")} />
+                  <CircleDollarSign className={cn("h-6 w-6", task.status !== 'incomplete' ? "text-gray-500" : "text-yellow-500")} />
                 )}
               </div>
               <div>
                 <p className="font-semibold text-gray-800 dark:text-gray-200">{task.title}</p>
                 <div className="flex items-center text-sm text-yellow-500">
                   <span>+{task.reward}</span>
-                  <Gem className="ml-1 h-3 w-3" />
+                  <CircleDollarSign className="ml-1 h-3 w-3" />
                 </div>
               </div>
             </div>

@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser, useAuth } from "@/firebase";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { signInWithGoogle } from "@/firebase/auth";
-import { Gem } from "lucide-react";
+import { CircleDollarSign } from "lucide-react";
 import { copy } from "@/lib/locales";
 
 export default function SignupPage() {
@@ -69,7 +69,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
             <div className="flex justify-center items-center mb-4">
-                <Gem className="h-10 w-10 text-primary" />
+                <CircleDollarSign className="h-10 w-10 text-yellow-500" />
             </div>
           <CardTitle>Join Golden Hours</CardTitle>
           <CardDescription>

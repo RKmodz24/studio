@@ -10,7 +10,7 @@ import CashoutProgress from "./components/cashout-progress";
 import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
 import LifetimeEarningsCard from "./components/lifetime-earnings-card";
-import { Gem, Gift, Loader2, Users } from "lucide-react";
+import { CircleDollarSign, Gift, Loader2, Users } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import AdPlayerGame from "./components/candy-crush-game";
@@ -149,7 +149,7 @@ export default function Home() {
         title: copy.tasks.taskCompleted,
         description: (
           <div className="flex items-center">
-            {copy.tasks.taskEarned(reward)} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+            {copy.tasks.taskEarned(reward)} <CircleDollarSign className="ml-1 h-4 w-4 text-yellow-500" />
           </div>
         ),
       });
@@ -227,7 +227,7 @@ export default function Home() {
             title: copy.toasts.bonusAwarded,
             description: (
               <div className="flex items-center">
-                {copy.toasts.bonusReceived(bonus)} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+                {copy.toasts.bonusReceived(bonus)} <CircleDollarSign className="ml-1 h-4 w-4 text-yellow-500" />
               </div>
             ),
           });
@@ -244,7 +244,7 @@ export default function Home() {
           title: copy.toasts.smallBonus,
           description: (
              <div className="flex items-center">
-              {copy.toasts.smallBonusDescription(bonus)} <Gem className="ml-1 h-4 w-4 text-blue-400" />
+              {copy.toasts.smallBonusDescription(bonus)} <CircleDollarSign className="ml-1 h-4 w-4 text-yellow-500" />
             </div>
           ),
         });
@@ -312,7 +312,7 @@ export default function Home() {
       <div className="w-full max-w-md space-y-6">
         <header className="flex items-center justify-between">
           <div className="flex items-center space-x-3 text-center">
-            <Gem className="h-8 w-8 text-primary" />
+            <CircleDollarSign className="h-8 w-8 text-yellow-500" />
             <h1 className="font-headline text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200">
               {copy.appName}
             </h1>
