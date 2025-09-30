@@ -89,6 +89,7 @@ export const copy = {
   },
   splash: {
     title: "Golden Hours",
+    welcome: "Welcome to",
   },
   toasts: {
     bonusCheck: "Checking for a bonus...",
