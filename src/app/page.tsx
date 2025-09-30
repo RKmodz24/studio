@@ -16,6 +16,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import AdPlayerGame from "./components/candy-crush-game";
 import SplashScreen from "./components/splash-screen";
 import { copy } from "@/lib/locales";
+import { useUser, useAuth } from "@/firebase";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { signInWithGoogle } from "@/firebase/auth";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 500;
@@ -77,6 +80,8 @@ function generateReferralCode() {
 
 export default function Home() {
   const router = useRouter();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   
   const [diamondBalance, setDiamondBalance] = useState(0);
   const [lifetimeEarnings, setLifetimeEarnings] = useState(0);
@@ -92,11 +97,21 @@ export default function Home() {
   const [commissionEarned, setCommissionEarned] = useState(0);
   const [savedPayoutDetails, setSavedPayoutDetails] = useState<PayoutDetails | null>(null);
   const [showSplash, setShowSplash] = useState(true);
+  const [showSignupPopup, setShowSignupPopup] = useState(false);
 
   useEffect(() => {
     const splashTimer = setTimeout(() => setShowSplash(false), 3000);
     return () => clearTimeout(splashTimer);
   }, []);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      const popupTimer = setTimeout(() => {
+        setShowSignupPopup(true);
+      }, 3500); // Show after splash screen
+      return () => clearTimeout(popupTimer);
+    }
+  }, [isUserLoading, user]);
 
   useEffect(() => {
     const newReferralCode = generateReferralCode();
@@ -303,12 +318,44 @@ export default function Home() {
       });
     }, 2000);
   };
-  
-  if (showSplash) {
-    return <SplashScreen />;
-  }
 
-  return (
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      await signInWithGoogle(auth, credentialResponse.credential);
+      setShowSignupPopup(false);
+      toast({
+        title: "Signed In",
+        description: "You have successfully signed in with Google.",
+      });
+    } catch (error) {
+      console.error("Google sign-in error", error);
+      toast({
+        variant: "destructive",
+        title: "Sign-in Failed",
+        description: "Could not sign in with Google. Please try again.",
+      });
+    }
+  };
+
+  const GoogleLoginButton = () => (
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+      <GoogleLogin
+        onSuccess={handleGoogleSuccess}
+        onError={() => {
+          console.error("Google login failed");
+          toast({
+            variant: "destructive",
+            title: "Sign-in Failed",
+            description: "Google login failed. Please try again.",
+          });
+        }}
+        useOneTap
+        auto_select
+      />
+    </GoogleOAuthProvider>
+  );
+
+  const HomeContent = (
     <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md space-y-6">
         <header className="flex items-center justify-between">
@@ -389,8 +436,30 @@ export default function Home() {
             <AdPlayerGame onReward={handleGameReward} />
         </DialogContent>
       </Dialog>
+
+      <Dialog open={showSignupPopup} onOpenChange={setShowSignupPopup}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Join Diamond Digger</DialogTitle>
+            <DialogDescription>
+              Sign up with Google to save your progress and cash out your earnings!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-center pt-4">
+             <GoogleLoginButton />
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
-}
+  
+  if (showSplash) {
+    return <SplashScreen />;
+  }
 
-    
+  if (isUserLoading) {
+     return <SplashScreen />;
+  }
+
+  return HomeContent;
+}
