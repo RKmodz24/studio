@@ -1,6 +1,6 @@
 
 export const copy = {
-  appName: "Diamond Digger",
+  appName: "Golden Hours",
   appDescription: "Complete tasks, earn diamonds, and cash out!",
   balance: {
     diamonds: "Diamonds",
@@ -88,7 +88,7 @@ export const copy = {
     }
   },
   splash: {
-    title: "Diamond Digger",
+    title: "Golden Hours",
   },
   toasts: {
     bonusCheck: "Checking for a bonus...",

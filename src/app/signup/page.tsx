@@ -10,6 +10,7 @@ import { useUser, useAuth } from "@/firebase";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { signInWithGoogle } from "@/firebase/auth";
 import { Gem } from "lucide-react";
+import { copy } from "@/lib/locales";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -70,7 +71,7 @@ export default function SignupPage() {
             <div className="flex justify-center items-center mb-4">
                 <Gem className="h-10 w-10 text-primary" />
             </div>
-          <CardTitle>Join Diamond Digger</CardTitle>
+          <CardTitle>Join Golden Hours</CardTitle>
           <CardDescription>
             Sign up to save your progress and cash out your earnings.
           </CardDescription>
