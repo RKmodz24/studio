@@ -442,11 +442,14 @@ export default function Home() {
           <DialogHeader>
             <DialogTitle>Join Diamond Digger</DialogTitle>
             <DialogDescription>
-              Sign up with Google to save your progress and cash out your earnings!
+              Sign up to save your progress and cash out your earnings!
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-center justify-center pt-4">
+          <div className="flex flex-col items-center justify-center space-y-4 pt-4">
              <GoogleLoginButton />
+             <Button variant="outline" onClick={() => setShowSignupPopup(false)}>
+               Continue as Guest
+             </Button>
           </div>
         </DialogContent>
       </Dialog>
