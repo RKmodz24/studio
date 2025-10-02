@@ -20,15 +20,15 @@ const offers: { [key: string]: any } = {
   'install-jar-app': {
     id: 'install-jar-app',
     title: 'Install Rapido & Ride',
-    totalInr: 29.16,
-    totalDiamonds: 2916,
+    totalInr: 30,
+    totalDiamonds: 3000,
     appIcon: 'https://i.imgur.com/8aVwf2s.png', // Rapido logo
     link: 'https://m.rapido.cc/Ewte/n538dyfh',
     steps: [
       { name: 'Install App', reward: 200, completed: false },
       { name: 'Register an account', reward: 500, completed: false },
       { name: 'Complete a ride', reward: 1500, completed: false },
-      { name: 'Day 2 - Open the app', reward: 716, completed: false },
+      { name: 'Day 2 - Open the app', reward: 800, completed: false },
     ],
     disclaimer:
       'To earn rewards, please make sure that the user is new and has not turned on VPN.',
