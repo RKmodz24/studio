@@ -4,10 +4,22 @@
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowDown } from "lucide-react";
 
 export default function DisclaimerPage() {
   const router = useRouter();
+
+  const FlowChartBox = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+    <div className={`border border-primary/20 bg-primary/5 rounded-lg p-2 text-center text-sm font-medium text-primary/80 ${className}`}>
+      {children}
+    </div>
+  );
+
+  const Arrow = () => (
+    <div className="flex justify-center my-2">
+      <ArrowDown className="h-5 w-5 text-muted-foreground" />
+    </div>
+  );
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-6 lg:p-8">
@@ -42,6 +54,46 @@ export default function DisclaimerPage() {
                 <p>
                     There is no gambling, betting, or lottery mechanism included. The app is purely for entertainment and reward purposes and complies fully with Google Play policies.
                 </p>
+            </CardContent>
+        </Card>
+
+        <Card className="shadow-lg">
+            <CardHeader>
+                <CardTitle>Task Flow</CardTitle>
+                <CardDescription>Here is how you earn rewards for each task.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                  <FlowChartBox>[Start Task]</FlowChartBox>
+                  <Arrow />
+                  <FlowChartBox>[Poster Ad Shown (3–5 sec)]</FlowChartBox>
+                  <Arrow />
+                  <FlowChartBox>[Banner Ad Shown (5–10 sec)]</FlowChartBox>
+                  <Arrow />
+                  <FlowChartBox>[Rewarded Video Ad (10–30 sec)]</FlowChartBox>
+                  <Arrow />
+                  <FlowChartBox>[Check Ads Viewed Completely?]</FlowChartBox>
+                  <div className="grid grid-cols-2 gap-4 mt-2">
+                    <div className="flex items-center">
+                      <div className="w-full text-center">
+                        <p className="text-sm text-muted-foreground">→ No</p>
+                        <FlowChartBox className="bg-red-50 border-red-200 text-red-700 mt-1">[Task Failed – Retry]</FlowChartBox>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-full text-center">
+                        <p className="text-sm text-muted-foreground">→ Yes</p>
+                        <FlowChartBox className="bg-green-50 border-green-200 text-green-700 mt-1">[Reward Credited + Wallet Updated]</FlowChartBox>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <div className="w-1/2">
+                      <Arrow />
+                      <FlowChartBox>[New Task Generated]</FlowChartBox>
+                    </div>
+                  </div>
+              </div>
             </CardContent>
         </Card>
 
