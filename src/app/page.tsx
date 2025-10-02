@@ -26,7 +26,7 @@ const REFERRAL_COMMISSION_RATE = 0.20;
 const initialDailyTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "daily_1", title: "Daily Check-in", reward: 100, type: "basic" },
     { id: "daily_2", title: "Watch a video ad", reward: 250, type: "ad" },
-    { id: "daily_3", title: "Install App & Register", reward: 1500, type: "basic" },
+    { id: "daily_3", title: "Install App & Register", reward: 1500, type: "offer", offerId: "install-jar-app" },
 ];
 
 const initialOneTimeTasks: Omit<Task, 'status' | 'completed'>[] = [
@@ -158,12 +158,17 @@ export default function Home() {
       // No toast here, it's handled inside the game component
   }, [addDiamonds]);
 
-  const handleTaskComplete = useCallback((taskId: string, reward: number, type: Task['type']) => {
+  const handleTaskComplete = useCallback((taskId: string, reward: number, type: Task['type'], offerId?: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (!task || task.status !== 'incomplete') return;
     
     if (type === 'game') {
         setIsGameOpen(true);
+        return;
+    }
+
+    if (type === 'offer' && offerId) {
+        router.push(`/offer/${offerId}`);
         return;
     }
 
@@ -228,7 +233,7 @@ export default function Home() {
         completeTask();
       }, 300);
     }
-  }, [tasks, addDiamonds, toast, referralCount]);
+  }, [tasks, addDiamonds, toast, referralCount, router]);
 
   const handleSurpriseBonus = async () => {
     setIsBonusLoading(true);

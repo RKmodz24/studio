@@ -117,5 +117,12 @@ export const copy = {
     cashoutProcessingPayPal: (amount: number, email: string) => `Cashing out ₹${amount.toFixed(2)} to PayPal: ${email}.`,
     cashoutSuccess: "Success!",
     cashoutSuccessDescription: "Your cashout request has been processed.",
+  },
+  offerPage: {
+    offerStatus: 'Offer status',
+    unclaimed: 'Unclaimed',
+    pending: 'Pending',
+    stepsToComplete: 'Steps to Complete',
+    earn: 'Earn',
   }
 };

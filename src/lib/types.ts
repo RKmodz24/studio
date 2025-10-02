@@ -4,7 +4,8 @@ export type Task = {
   reward: number;
   completed: boolean; // Note: completed is being deprecated in favor of status
   status: 'incomplete' | 'processing' | 'completed';
-  type: 'basic' | 'ad' | 'game';
+  type: 'basic' | 'ad' | 'game' | 'offer';
+  offerId?: string;
 };
 
 export type BankPayoutDetails = {
