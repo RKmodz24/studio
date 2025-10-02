@@ -34,7 +34,8 @@ export const copy = {
     bonusDescription: "You'll also get 20% of their earnings forever.",
   },
   tasks: {
-    title: "Pending Tasks",
+    title: "More Tasks",
+    dailyTasks: "Daily Tasks",
     surpriseBonus: "Surprise Bonus",
     complete: "Complete",
     play: "Play",
@@ -42,6 +43,7 @@ export const copy = {
     processing: "Processing",
     taskCompleted: "Task Completed!",
     taskEarned: (reward: number) => `You've earned ${reward}`,
+    allDailyTasksCompleted: "All daily tasks completed for today! Come back tomorrow.",
   },
   adGame: {
     title: "Ad Game",
@@ -117,6 +119,3 @@ export const copy = {
     cashoutSuccessDescription: "Your cashout request has been processed.",
   }
 };
-
-    
-    
