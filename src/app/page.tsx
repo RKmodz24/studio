@@ -21,6 +21,7 @@ import {
   Gift,
   Loader2,
   Wallet,
+  RefreshCw,
 } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -73,7 +74,7 @@ export default function Home() {
     return () => clearTimeout(splashTimer);
   }, []);
 
-  useEffect(() => {
+  const loadTasks = () => {
     let storedTasks: Task[] = [];
     const storedTasksString = localStorage.getItem('tasks');
     if (storedTasksString) {
@@ -87,6 +88,10 @@ export default function Home() {
     
     const updatedTasks = [...storedTasks, ...newTasks];
     setTasks(updatedTasks);
+  };
+
+  useEffect(() => {
+    loadTasks();
   }, []);
 
   useEffect(() => {
@@ -266,17 +271,34 @@ export default function Home() {
       });
     }, 2000);
   };
+
+  const handleRefreshTasks = () => {
+    localStorage.removeItem('tasks');
+    setTasks(initialTasks.map(task => ({ ...task, status: 'incomplete' } as Task)));
+    toast({
+      title: "Tasks Refreshed",
+      description: "You have a new set of tasks.",
+    });
+  };
   
   const HomeContent = (
     <main className="flex min-h-screen flex-col items-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md space-y-6">
-        <header className="flex flex-col items-center text-center">
-          <h1 className="font-headline text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200">
-            {copy.appName}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {copy.appDescription}
-          </p>
+        <header className="flex items-center justify-between text-center">
+          <div className="flex-1 text-left"></div>
+          <div className="flex-1 text-center">
+            <h1 className="font-headline text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200">
+              {copy.appName}
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {copy.appDescription}
+            </p>
+          </div>
+          <div className="flex-1 text-right">
+             <Button variant="ghost" size="icon" onClick={handleRefreshTasks}>
+                <RefreshCw className="h-5 w-5" />
+             </Button>
+          </div>
         </header>
 
         {!isUserLoading && !user && (
@@ -395,3 +417,6 @@ export default function Home() {
   return HomeContent;
 }
 
+
+
+    
