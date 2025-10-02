@@ -77,19 +77,22 @@ export default function SignupPage() {
     </GoogleOAuthProvider>
   );
   
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-       <div className="absolute top-4 left-4">
-          <Button variant="ghost" onClick={() => router.push('/')}>
-            Back to Home
-          </Button>
+  if (isUserLoading || user) {
+    return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-background">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
-      <Card className="w-full max-w-sm">
+    );
+  }
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+      <Card className="w-full max-w-sm shadow-xl">
         <CardHeader className="text-center">
             <div className="flex justify-center items-center mb-4">
-                <CircleDollarSign className="h-10 w-10 text-yellow-500" />
+                <CircleDollarSign className="h-12 w-12 text-yellow-500" />
             </div>
-          <CardTitle>Join Golden Hours</CardTitle>
+          <CardTitle className="text-2xl font-bold">Join Golden Hours</CardTitle>
           <CardDescription>
             Sign up to save your progress and cash out your earnings.
           </CardDescription>
@@ -97,10 +100,14 @@ export default function SignupPage() {
         <CardContent>
           <div className="flex flex-col items-center space-y-4">
             <GoogleLoginButton />
-            <Button onClick={handleFacebookSignIn} className="w-full">
+            <Button onClick={handleFacebookSignIn} className="w-[195px] bg-[#1877F2] hover:bg-[#166fe5]">
               Sign In with Facebook
             </Button>
-            <Separator className="my-2" />
+            <div className="relative w-full flex items-center py-2">
+                <div className="flex-grow border-t border-gray-300"></div>
+                <span className="flex-shrink mx-4 text-gray-400 text-xs">OR</span>
+                <div className="flex-grow border-t border-gray-300"></div>
+            </div>
             <Button variant="link" onClick={() => router.push('/')}>
               Continue as Guest
             </Button>
