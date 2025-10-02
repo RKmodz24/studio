@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Copy, Users, Award } from "lucide-react";
+import { ArrowLeft, Copy, Users, Award, CircleDollarSign } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { copy } from "@/lib/locales";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function ReferPage() {
   const router = useRouter();
@@ -93,6 +94,14 @@ export default function ReferPage() {
               <CardDescription>{copy.referral.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <Alert className="border-accent bg-accent/10">
+                <Award className="h-5 w-5 text-accent" />
+                <AlertTitle className="text-accent">{copy.referral.bonusTitle}</AlertTitle>
+                <AlertDescription className="text-accent/90">
+                  {copy.referral.bonusDescription}
+                </AlertDescription>
+              </Alert>
+
               <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">{copy.referral.codeLabel}</label>
                   <div className="flex items-center justify-between rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
@@ -134,3 +143,5 @@ export default function ReferPage() {
     </main>
   );
 }
+
+    

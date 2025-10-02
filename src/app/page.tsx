@@ -39,7 +39,7 @@ const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "13", title: "Try a new feature", reward: 150, type: "basic" },
     { id: "14", title: "Watch a sponsored video", reward: 300, type: "ad" },
     { id: "15", title: "Leave a review", reward: 450, type: "basic" },
-    { id: "16", title: "Refer a user", reward: 1500, type: "basic" },
+    { id: "16", title: "Refer a user", reward: 1100, type: "basic" },
     { id: "17", title: "View a special offer", reward: 220, type: "ad" },
     { id: "18", title: "Link your email", reward: 350, type: "basic" },
     { id: "19", title: "Weekly challenge", reward: 750, type: "basic" },
@@ -428,3 +428,5 @@ export default function Home() {
 
   return HomeContent;
 }
+
+    

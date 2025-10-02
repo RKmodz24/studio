@@ -23,13 +23,15 @@ export const copy = {
   referral: {
     button: "Refer & Earn",
     title: "Refer & Earn",
-    description: "Earn 20% of their earnings forever!",
+    description: "Invite your friends and earn rewards!",
     codeLabel: "Your Referral Code",
     linkLabel: "Your Referral Link",
     referrals: "Referrals",
     commission: "Commission",
     copied: "Copied!",
     copiedDescription: (type: 'code' | 'link') => `Referral ${type} copied to clipboard.`,
+    bonusTitle: "Earn 1100 Diamonds per Referral!",
+    bonusDescription: "You'll also get 20% of their earnings forever.",
   },
   tasks: {
     title: "Pending Tasks",
@@ -115,3 +117,5 @@ export const copy = {
     cashoutSuccessDescription: "Your cashout request has been processed.",
   }
 };
+
+    
