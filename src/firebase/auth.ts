@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Auth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { Auth, GoogleAuthProvider, FacebookAuthProvider, signInWithCredential, signInWithPopup } from 'firebase/auth';
 
 /**
  * Initiates Google sign-in process.
@@ -11,4 +11,12 @@ import { Auth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 export async function signInWithGoogle(authInstance: Auth, idToken: string): Promise<void> {
   const credential = GoogleAuthProvider.credential(idToken);
   await signInWithCredential(authInstance, credential);
+}
+
+/**
+ * Initiates Facebook sign-in process using a popup.
+ */
+export async function signInWithFacebook(authInstance: Auth): Promise<void> {
+  const provider = new FacebookAuthProvider();
+  await signInWithPopup(authInstance, provider);
 }
