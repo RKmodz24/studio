@@ -16,6 +16,12 @@ export const copy = {
     payoutRequest: (amount: number) => `Request Payout of ₹${amount.toFixed(2)}`,
     payoutProcessing: "Processing...",
   },
+  testCashout: {
+    title: "Test Withdrawal",
+    description: (adCount: number, amount: number) => `Watch ${adCount} ads to unlock a test withdrawal of ₹${amount}.`,
+    button: (amount: number) => `Withdraw ₹${amount.toFixed(2)}`,
+    payoutTitle: "Enter Test Payout Details",
+  },
   lifetimeEarnings: {
     title: "Lifetime Earnings",
     description: "Total amount you have cashed out",
@@ -126,3 +132,5 @@ export const copy = {
     earn: 'Earn',
   }
 };
+
+    

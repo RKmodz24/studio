@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
@@ -22,6 +23,7 @@ import {
   Wallet,
   RefreshCw,
   MessageSquare,
+  Sparkles,
 } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -32,6 +34,9 @@ import { useUser } from "@/firebase";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 500;
+const TEST_WITHDRAWAL_INR = 1;
+const TEST_WITHDRAWAL_DIAMONDS = TEST_WITHDRAWAL_INR * DIAMONDS_PER_INR;
+const ADS_FOR_TEST_WITHDRAWAL = 5;
 const REFERRAL_COMMISSION_RATE = 0.20;
 
 const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
@@ -60,14 +65,18 @@ export default function Home() {
   const [inrBalance, setInrBalance] = useState(0);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isCashingOut, setIsCashingOut] = useState(false);
+  const [isTestCashingOut, setIsTestCashingOut] = useState(false);
   const [balanceKey, setBalanceKey] = useState(0);
   const [isPayoutFormOpen, setIsPayoutFormOpen] = useState(false);
+  const [isTestPayoutFormOpen, setIsTestPayoutFormOpen] = useState(false);
   const [isGameOpen, setIsGameOpen] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [referralCount, setReferralCount] = useState(0);
   const [commissionEarned, setCommissionEarned] = useState(0);
   const [savedPayoutDetails, setSavedPayoutDetails] = useState<PayoutDetails | null>(null);
   const [showSplash, setShowSplash] = useState(true);
+  const [adsWatchedForTestWithdrawal, setAdsWatchedForTestWithdrawal] = useState(0);
+  const [testWithdrawalCompleted, setTestWithdrawalCompleted] = useState(false);
 
   useEffect(() => {
     const splashTimer = setTimeout(() => setShowSplash(false), 3000);
@@ -92,6 +101,10 @@ export default function Home() {
 
   useEffect(() => {
     loadTasks();
+    const adsWatched = parseInt(localStorage.getItem('adsWatchedForTestWithdrawal') || '0', 10);
+    setAdsWatchedForTestWithdrawal(adsWatched);
+    const withdrawalCompleted = localStorage.getItem('testWithdrawalCompleted') === 'true';
+    setTestWithdrawalCompleted(withdrawalCompleted);
   }, []);
 
   useEffect(() => {
@@ -117,6 +130,7 @@ export default function Home() {
   }, [diamondBalance]);
 
   const progress = useMemo(() => Math.min((inrBalance / MINIMUM_PAYOUT_INR) * 100, 100), [inrBalance]);
+  const testWithdrawalProgress = useMemo(() => Math.min((adsWatchedForTestWithdrawal / ADS_FOR_TEST_WITHDRAWAL) * 100, 100), [adsWatchedForTestWithdrawal]);
 
   const anytimeTasks = useMemo(() => tasks.filter(t => t.status !== 'completed'), [tasks]);
 
@@ -174,6 +188,14 @@ export default function Home() {
 
         return finalTasks;
       });
+
+      if (type === 'ad') {
+        setAdsWatchedForTestWithdrawal(prev => {
+            const newCount = prev + 1;
+            localStorage.setItem('adsWatchedForTestWithdrawal', String(newCount));
+            return newCount;
+        });
+      }
 
       toast({
         title: copy.tasks.taskCompleted,
@@ -243,6 +265,18 @@ export default function Home() {
     }
   };
 
+  const handleTestCashout = () => {
+    if (diamondBalance >= TEST_WITHDRAWAL_DIAMONDS && adsWatchedForTestWithdrawal >= ADS_FOR_TEST_WITHDRAWAL) {
+      setIsTestPayoutFormOpen(true);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Test Cashout Not Available",
+        description: `You need to watch ${ADS_FOR_TEST_WITHDRAWAL} ads and have at least ${TEST_WITHDRAWAL_DIAMONDS} diamonds.`,
+      });
+    }
+  };
+
   const processCashout = (details: PayoutDetails, remember: boolean) => {
     setIsCashingOut(true);
     setIsPayoutFormOpen(false);
@@ -280,6 +314,39 @@ export default function Home() {
       toast({
         title: copy.toasts.cashoutSuccess,
         description: copy.toasts.cashoutSuccessDescription,
+      });
+    }, 2000);
+  };
+  
+    const processTestCashout = (details: PayoutDetails, remember: boolean) => {
+    setIsTestCashingOut(true);
+    setIsTestPayoutFormOpen(false);
+
+    if (remember && !savedPayoutDetails) {
+      setSavedPayoutDetails(details);
+    }
+    
+    const amountToCashout = TEST_WITHDRAWAL_INR;
+    let description = "";
+    if (details.payoutType === 'bank') {
+      description = copy.toasts.cashoutProcessingBank(amountToCashout, details.accountHolderName);
+    } else if (details.payoutType === 'upi') {
+      description = copy.toasts.cashoutProcessingUpi(amountToCashout, details.upiId);
+    } else if (details.payoutType === 'paypal') {
+      description = copy.toasts.cashoutProcessingPayPal(amountToCashout, details.paypalEmail);
+    }
+    toast({
+      title: copy.toasts.cashoutProcessing,
+      description: description,
+    });
+    setTimeout(() => {
+      setDiamondBalance(prev => prev - TEST_WITHDRAWAL_DIAMONDS);
+      setIsTestCashingOut(false);
+      setTestWithdrawalCompleted(true);
+      localStorage.setItem('testWithdrawalCompleted', 'true');
+      toast({
+        title: copy.toasts.cashoutSuccess,
+        description: `Your test cashout of ₹${amountToCashout.toFixed(2)} has been processed.`,
       });
     }, 2000);
   };
@@ -345,6 +412,42 @@ export default function Home() {
           </Card>
         </div>
 
+        {!testWithdrawalCompleted && (
+          <Card className="bg-gradient-to-r from-primary/10 to-accent/10">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <Sparkles className="h-6 w-6 text-primary" />
+                <CardTitle>{copy.testCashout.title}</CardTitle>
+              </div>
+              <CardDescription>
+                {copy.testCashout.description(ADS_FOR_TEST_WITHDRAWAL, TEST_WITHDRAWAL_INR)}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Progress value={testWithdrawalProgress} />
+              <div className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
+                {adsWatchedForTestWithdrawal} / {ADS_FOR_TEST_WITHDRAWAL} ads watched
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={handleTestCashout} 
+                disabled={isTestCashingOut || adsWatchedForTestWithdrawal < ADS_FOR_TEST_WITHDRAWAL || diamondBalance < TEST_WITHDRAWAL_DIAMONDS} 
+                className="w-full"
+              >
+                {isTestCashingOut ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {copy.cashout.buttonProcessing}
+                  </>
+                ) : (
+                  copy.testCashout.button(TEST_WITHDRAWAL_INR)
+                )}
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>{copy.cashout.title}</CardTitle>
@@ -404,6 +507,24 @@ export default function Home() {
           />
         </DialogContent>
       </Dialog>
+      
+      <Dialog open={isTestPayoutFormOpen} onOpenChange={setIsTestPayoutFormOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{copy.testCashout.payoutTitle}</DialogTitle>
+            <DialogDescription>
+             {copy.cashout.payoutDescription}
+            </DialogDescription>
+          </DialogHeader>
+          <PayoutForm
+            amount={TEST_WITHDRAWAL_INR}
+            onSubmit={processTestCashout}
+            isProcessing={isTestCashingOut}
+            savedDetails={savedPayoutDetails}
+          />
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isGameOpen} onOpenChange={setIsGameOpen}>
         <DialogContent className="max-w-sm">
             <DialogHeader>
@@ -435,3 +556,5 @@ export default function Home() {
 
   return HomeContent;
 }
+
+    
