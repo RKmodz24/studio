@@ -37,7 +37,7 @@ const REFERRAL_COMMISSION_RATE = 0.20;
 
 const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "daily_1", title: "Daily Check-in", reward: 100, type: "basic" },
-    { id: "daily_3", title: "Install App & Register", reward: 1500, type: "offer", offerId: "install-jar-app", icon: "/jar-icon.png", description: "Complete autopay setup" },
+    { id: "daily_3", title: "Install Rapido & Ride", reward: 1500, type: "offer", offerId: "install-jar-app", icon: "/app-icon.png", description: "Install the app and complete a ride" },
     { id: "1", title: "Play & Win up to 100,000 Diamonds!", reward: 0, type: 'game' },
     { id: 'instagram_follow', title: 'Follow us on Instagram!', reward: 5000, type: 'link', description: 'Get a bonus for following our page!', link: 'https://www.instagram.com/golden_hours24__?igsh=MTh3aWJtOXlldG0xbA==', highlighted: true },
     { id: "3", title: "Rate our App", reward: 500, type: "basic" },

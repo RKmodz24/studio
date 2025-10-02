@@ -19,15 +19,16 @@ import Image from 'next/image';
 const offers: { [key: string]: any } = {
   'install-jar-app': {
     id: 'install-jar-app',
-    title: 'Complete autopay setup',
+    title: 'Install Rapido & Ride',
     totalInr: 29.16,
     totalDiamonds: 2916,
-    appIcon: '/jar-icon.png', // Placeholder, you should add this image to /public
+    appIcon: '/app-icon.png', // Placeholder for Rapido
+    link: 'https://m.rapido.cc/Ewte/n538dyfh',
     steps: [
-      { name: 'Start', reward: 29, completed: false },
-      { name: 'Install APP', reward: 145, completed: false },
-      { name: 'Register an account', reward: 200, completed: false },
-      { name: 'Day 2 - Open the app', reward: 701, completed: false },
+      { name: 'Install App', reward: 200, completed: false },
+      { name: 'Register an account', reward: 500, completed: false },
+      { name: 'Complete a ride', reward: 1500, completed: false },
+      { name: 'Day 2 - Open the app', reward: 716, completed: false },
     ],
     disclaimer:
       'To earn rewards, please make sure that the user is new and has not turned on VPN.',
@@ -41,7 +42,7 @@ export default function OfferPage() {
   const offerId = params.offerId as string;
   const offer = offers[offerId];
 
-  const [offerSteps, setOfferSteps] = useState(offer.steps);
+  const [offerSteps, setOfferSteps] = useState(offer?.steps || []);
   const [claimed, setClaimed] = useState(false);
 
   if (!offer) {
@@ -56,11 +57,13 @@ export default function OfferPage() {
   }
 
   const handleClaimOffer = () => {
-    // In a real app, you would redirect to the app store or a specific URL
     toast({
       title: 'Redirecting to offer...',
       description: 'You will be redirected to complete the offer.',
     });
+    if (offer.link) {
+      window.open(offer.link, '_blank');
+    }
     setClaimed(true);
   };
 
@@ -88,7 +91,7 @@ export default function OfferPage() {
             <CardContent className="flex items-center space-x-4 p-4">
               <Image
                 src={offer.appIcon}
-                alt="Jar App"
+                alt={offer.title}
                 width={64}
                 height={64}
                 className="rounded-lg"
