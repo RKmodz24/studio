@@ -4,10 +4,12 @@ export type Task = {
   reward: number;
   completed: boolean; // Note: completed is being deprecated in favor of status
   status: 'incomplete' | 'processing' | 'completed';
-  type: 'basic' | 'ad' | 'game' | 'offer' | 'withdraw';
+  type: 'basic' | 'ad' | 'game' | 'offer' | 'withdraw' | 'link';
   offerId?: string;
   description?: string;
   icon?: string;
+  link?: string;
+  highlighted?: boolean;
 };
 
 export type BankPayoutDetails = {

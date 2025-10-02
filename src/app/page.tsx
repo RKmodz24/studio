@@ -100,6 +100,25 @@ export default function Home() {
     }
   }, [tasks]);
 
+    useEffect(() => {
+    if (diamondBalance >= 5000) {
+      const instagramTaskExists = tasks.some(task => task.id === 'instagram_follow');
+      if (!instagramTaskExists) {
+        const newInstagramTask: Task = {
+          id: 'instagram_follow',
+          title: 'Follow us on Instagram!',
+          reward: 500,
+          type: 'link',
+          status: 'incomplete',
+          description: 'Get a bonus for following our page!',
+          link: 'https://www.instagram.com/golden_hours24__?igsh=MTh3aWJtOXlldG0xbA==',
+          highlighted: true,
+        };
+        setTasks(currentTasks => [newInstagramTask, ...currentTasks]);
+      }
+    }
+  }, [diamondBalance, tasks]);
+
 
   useEffect(() => {
     const newReferralCode = generateReferralCode();
@@ -130,7 +149,7 @@ export default function Home() {
       // No toast here, it's handled inside the game component
   }, [addDiamonds]);
 
-  const handleTaskComplete = useCallback((taskId: string, reward: number, type: Task['type'], offerId?: string) => {
+  const handleTaskComplete = useCallback((taskId: string, reward: number, type: Task['type'], offerId?: string, link?: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (!task || task.status !== 'incomplete') return;
     
@@ -142,6 +161,10 @@ export default function Home() {
     if (type === 'offer' && offerId) {
         router.push(`/offer/${offerId}`);
         return;
+    }
+
+    if (type === 'link' && link) {
+      window.open(link, '_blank');
     }
 
     const completeTask = () => {
@@ -159,7 +182,7 @@ export default function Home() {
 
       setTasks(currentTasks => [
         ...currentTasks.map(t => t.id === taskId ? { ...t, status: 'completed' } : t),
-        newAdTask
+        ...(taskId !== 'instagram_follow' ? [newAdTask] : []) // Don't generate a new ad task for instagram follow
       ].filter(t => t.status !== 'completed'));
 
       toast({
