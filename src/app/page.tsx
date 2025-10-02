@@ -418,7 +418,7 @@ export default function Home() {
       </Dialog>
 
       <Button
-        onClick={() => router.push('/contact')}
+        onClick={() => window.open('https://t.me/A2Z_Growth', '_blank')}
         className="fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg"
       >
         <MessageSquare className="h-6 w-6" />
