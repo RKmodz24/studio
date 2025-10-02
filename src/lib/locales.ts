@@ -18,7 +18,7 @@ export const copy = {
   },
   testCashout: {
     title: "Test Withdrawal",
-    description: (adCount: number, amount: number) => `Watch ${adCount} ads to unlock a test withdrawal of ₹${amount}.`,
+    description: (adCount: number, amount: number, diamonds: number) => `Watch ${adCount} ads and have ${diamonds} diamonds to unlock a test withdrawal of ₹${amount}.`,
     button: (amount: number) => `Withdraw ₹${amount.toFixed(2)}`,
     payoutTitle: "Enter Test Payout Details",
   },
@@ -132,5 +132,7 @@ export const copy = {
     earn: 'Earn',
   }
 };
+
+    
 
     

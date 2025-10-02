@@ -420,7 +420,7 @@ export default function Home() {
                 <CardTitle>{copy.testCashout.title}</CardTitle>
               </div>
               <CardDescription>
-                {copy.testCashout.description(ADS_FOR_TEST_WITHDRAWAL, TEST_WITHDRAWAL_INR)}
+                {copy.testCashout.description(ADS_FOR_TEST_WITHDRAWAL, TEST_WITHDRAWAL_INR, TEST_WITHDRAWAL_DIAMONDS)}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -556,5 +556,7 @@ export default function Home() {
 
   return HomeContent;
 }
+
+    
 
     
