@@ -11,7 +11,7 @@ import CashoutProgress from "./components/cashout-progress";
 import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
 import LifetimeEarningsCard from "./components/lifetime-earnings-card";
-import { CircleDollarSign, Gift, Loader2, Users } from "lucide-react";
+import { CircleDollarSign, Gift, Loader2, Users, Send } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import AdPlayerGame from "./components/candy-crush-game";
@@ -370,11 +370,23 @@ export default function Home() {
             <Link href="/disclaimer" className="underline hover:text-primary">
                 Disclaimer
             </Link>
-            <a href="https://t.me/A2Z_Growth" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
-                Need Help?
-            </a>
         </footer>
       </div>
+      <a
+        href="https://t.me/A2Z_Growth"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-10"
+        aria-label="Chat on Telegram"
+      >
+        <Button
+          size="icon"
+          className="rounded-full h-14 w-14 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+        >
+          <Send className="h-6 w-6" />
+          <span className="sr-only">Chat on Telegram</span>
+        </Button>
+      </a>
       <Dialog open={isPayoutFormOpen} onOpenChange={setIsPayoutFormOpen}>
         <DialogContent>
           <DialogHeader>
@@ -416,7 +428,3 @@ export default function Home() {
 
   return HomeContent;
 }
-
-    
-
-    
