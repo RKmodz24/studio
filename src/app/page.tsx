@@ -366,10 +366,13 @@ export default function Home() {
           </div>
           <TaskList tasks={pendingTasks} onCompleteTask={handleTaskComplete} listId="pending" />
         </div>
-        <footer className="text-center text-sm text-muted-foreground pt-4">
+        <footer className="text-center text-sm text-muted-foreground pt-4 flex justify-center space-x-4">
             <Link href="/disclaimer" className="underline hover:text-primary">
                 Disclaimer
             </Link>
+            <a href="https://t.me/A2Z_Growth" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
+                Need Help?
+            </a>
         </footer>
       </div>
       <Dialog open={isPayoutFormOpen} onOpenChange={setIsPayoutFormOpen}>
@@ -413,5 +416,7 @@ export default function Home() {
 
   return HomeContent;
 }
+
+    
 
     
