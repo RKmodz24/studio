@@ -19,10 +19,10 @@ const TaskList = ({ tasks, onCompleteTask, listId }: TaskListProps) => {
         <Card
           key={`${listId}-${task.id}`}
           className={cn(
-            "transition-all duration-500 ease-in-out",
+            "transition-all duration-500 ease-out",
             task.status === 'completed'
-              ? "opacity-0 scale-95 -translate-y-4 max-h-0 py-0"
-              : "opacity-100 scale-100 translate-y-0 max-h-32",
+              ? "opacity-0 scale-95 -translate-x-full max-h-0 py-0"
+              : "opacity-100 scale-100 translate-x-0 max-h-32",
             task.type === 'game' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-300 dark:border-yellow-700 shadow-md' : ''
           )}
         >
