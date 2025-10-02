@@ -22,6 +22,7 @@ import {
   Loader2,
   Wallet,
   RefreshCw,
+  MessageSquare,
 } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -380,10 +381,10 @@ export default function Home() {
           <TaskList tasks={anytimeTasks} onCompleteTask={handleTaskComplete} listId="anytime" />
         </div>
         
-        <footer className="text-center text-sm text-gray-500 dark:text-gray-400 pt-4">
+        <footer className="text-center text-sm text-gray-500 dark:text-gray-400 pt-4 pb-20">
             <p>&copy; {new Date().getFullYear()} {copy.appName}. All rights reserved.</p>
             <p>
-                <a href="/disclaimer" className="underline">Disclaimer</a> | <a href="#" className="underline">Contact</a>
+                <a href="/disclaimer" className="underline">Disclaimer</a>
             </p>
         </footer>
       </div>
@@ -415,6 +416,13 @@ export default function Home() {
             <AdPlayerGame onReward={handleGameReward} />
         </DialogContent>
       </Dialog>
+
+      <Button
+        onClick={() => router.push('/contact')}
+        className="fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg"
+      >
+        <MessageSquare className="h-6 w-6" />
+      </Button>
     </main>
   );
   
@@ -428,15 +436,3 @@ export default function Home() {
 
   return HomeContent;
 }
-
-
-
-    
-
-    
-
-
-
-    
-
-    
