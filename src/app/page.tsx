@@ -3,6 +3,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import BalanceCard from "./components/balance-card";
@@ -365,6 +366,11 @@ export default function Home() {
           </div>
           <TaskList tasks={pendingTasks} onCompleteTask={handleTaskComplete} listId="pending" />
         </div>
+        <footer className="text-center text-sm text-muted-foreground pt-4">
+            <Link href="/disclaimer" className="underline hover:text-primary">
+                Disclaimer
+            </Link>
+        </footer>
       </div>
       <Dialog open={isPayoutFormOpen} onOpenChange={setIsPayoutFormOpen}>
         <DialogContent>

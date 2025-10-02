@@ -1,0 +1,48 @@
+
+"use client";
+
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+
+export default function DisclaimerPage() {
+  const router = useRouter();
+
+  return (
+    <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-2xl space-y-6">
+        <header className="relative flex items-center justify-center">
+          <Button variant="ghost" size="icon" className="absolute left-0" onClick={() => router.push('/')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="font-headline text-2xl font-bold">Disclaimer</h1>
+        </header>
+        
+        <Card className="shadow-lg">
+            <CardHeader>
+                <CardTitle>Important Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-muted-foreground">
+                <p>
+                    This is a Reward Application where users can earn points by watching advertisements and completing tasks within the app.
+                </p>
+                <p>
+                    Once the user reaches the minimum threshold of ₹500, they can withdraw real money through UPI/Bank transfer.
+                </p>
+                <p>
+                    We clearly mention that all user rewards and withdrawals are funded ONLY from the Google AdMob advertising revenue generated within this application.
+                </p>
+                <p>
+                    There is no gambling, betting, or lottery system involved in any form.
+                </p>
+                <p>
+                    The app is purely for entertainment and reward purposes, and it fully complies with Google Play policies.
+                </p>
+            </CardContent>
+        </Card>
+
+      </div>
+    </main>
+  );
+}
