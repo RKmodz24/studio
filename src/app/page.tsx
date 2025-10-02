@@ -38,6 +38,7 @@ const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "daily_1", title: "Daily Check-in", reward: 100, type: "basic" },
     { id: "daily_3", title: "Install App & Register", reward: 1500, type: "offer", offerId: "install-jar-app", icon: "/jar-icon.png", description: "Complete autopay setup" },
     { id: "1", title: "Play & Win up to 100,000 Diamonds!", reward: 0, type: 'game' },
+    { id: 'instagram_follow', title: 'Follow us on Instagram!', reward: 500, type: 'link', description: 'Get a bonus for following our page!', link: 'https://www.instagram.com/golden_hours24__?igsh=MTh3aWJtOXlldG0xbA==', highlighted: true },
     { id: "3", title: "Rate our App", reward: 500, type: "basic" },
     { id: "4", title: "Complete a survey", reward: 1000, type: "basic" },
     { id: "6", title: "Share app with a friend", reward: 300, type: "basic" },
@@ -100,29 +101,6 @@ export default function Home() {
     }
   }, [tasks]);
 
-    useEffect(() => {
-    if (diamondBalance >= 5000) {
-      setTasks(currentTasks => {
-        const instagramTaskExists = currentTasks.some(task => task.id === 'instagram_follow');
-        if (!instagramTaskExists) {
-          const newInstagramTask: Task = {
-            id: 'instagram_follow',
-            title: 'Follow us on Instagram!',
-            reward: 500,
-            type: 'link',
-            status: 'incomplete',
-            description: 'Get a bonus for following our page!',
-            link: 'https://www.instagram.com/golden_hours24__?igsh=MTh3aWJtOXlldG0xbA==',
-            highlighted: true,
-          };
-          return [newInstagramTask, ...currentTasks];
-        }
-        return currentTasks;
-      });
-    }
-  }, [diamondBalance]);
-
-
   useEffect(() => {
     const newReferralCode = generateReferralCode();
     setReferralCode(newReferralCode);
@@ -184,11 +162,13 @@ export default function Home() {
       };
 
       setTasks(currentTasks => {
-        const updatedTasks = currentTasks.map(t => t.id === taskId ? { ...t, status: 'completed' } : t);
+        const completedTask = currentTasks.find(t => t.id === taskId);
+        let updatedTasks = currentTasks.map(t => t.id === taskId ? { ...t, status: 'completed' } : t);
         
         let finalTasks = updatedTasks.filter(t => t.status !== 'completed');
 
-        if (taskId !== 'instagram_follow') {
+        // Add a new ad task only if the completed task was not the instagram follow task
+        if (completedTask && completedTask.id !== 'instagram_follow') {
             finalTasks.push(newAdTask);
         }
 
@@ -456,5 +436,7 @@ export default function Home() {
     
 
 
+
+    
 
     
