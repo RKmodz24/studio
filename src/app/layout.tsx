@@ -22,11 +22,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-gray-100 dark:bg-gray-900">
+      <body className="font-body antialiased">
         <FirebaseClientProvider>
-          <div className="relative w-full max-w-md mx-auto bg-white dark:bg-gray-950 min-h-screen">
             {children}
-          </div>
         </FirebaseClientProvider>
         <Toaster />
       </body>

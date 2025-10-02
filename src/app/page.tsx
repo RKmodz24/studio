@@ -8,15 +8,19 @@ import { Button } from "@/components/ui/button";
 import TaskList from "./components/task-list";
 import PayoutForm from "./components/payout-form";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import {
   CircleDollarSign,
   Gift,
   Loader2,
   Wallet,
-  Star,
-  CheckCircle,
-  ShoppingBag,
-  Users,
-  BadgePercent,
 } from "lucide-react";
 import type { Task, PayoutDetails } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -24,16 +28,12 @@ import AdPlayerGame from "./components/candy-crush-game";
 import SplashScreen from "./components/splash-screen";
 import { copy } from "@/lib/locales";
 import { useUser } from "@/firebase";
-import CircularProgress from "./components/circular-progress";
-import BottomNav from "./components/bottom-nav";
-import Image from "next/image";
 
 const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 500;
 const REFERRAL_COMMISSION_RATE = 0.20;
 
 const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
-    { id: "withdraw", title: "Withdrawal offer", reward: 0, type: "withdraw" },
     { id: "daily_1", title: "Daily Check-in", reward: 100, type: "basic" },
     { id: "daily_2", title: "Watch a video ad", reward: 250, type: "ad" },
     { id: "daily_3", title: "Install App & Register", reward: 1500, type: "offer", offerId: "install-jar-app", icon: "/jar-icon.png", description: "Complete autopay setup" },
@@ -56,6 +56,7 @@ export default function Home() {
   const { user, isUserLoading } = useUser();
   
   const [diamondBalance, setDiamondBalance] = useState(0);
+  const [inrBalance, setInrBalance] = useState(0);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isCashingOut, setIsCashingOut] = useState(false);
   const [balanceKey, setBalanceKey] = useState(0);
@@ -107,7 +108,10 @@ export default function Home() {
 
   const { toast } = useToast();
 
-  const inrBalance = useMemo(() => diamondBalance / DIAMONDS_PER_INR, [diamondBalance]);
+  useEffect(() => {
+    setInrBalance(diamondBalance / DIAMONDS_PER_INR);
+  }, [diamondBalance]);
+
   const progress = useMemo(() => Math.min((inrBalance / MINIMUM_PAYOUT_INR) * 100, 100), [inrBalance]);
 
   const anytimeTasks = useMemo(() => tasks.filter(t => t.status !== 'completed'), [tasks]);
@@ -131,11 +135,6 @@ export default function Home() {
         return;
     }
 
-    if (type === 'withdraw') {
-        handleCashout();
-        return;
-    }
-
     if (type === 'offer' && offerId) {
         router.push(`/offer/${offerId}`);
         return;
@@ -155,9 +154,9 @@ export default function Home() {
       };
 
       setTasks(currentTasks => [
-        ...currentTasks.filter(t => t.id !== taskId),
+        ...currentTasks.map(t => t.id === taskId ? { ...t, status: 'completed' } : t),
         newAdTask
-      ]);
+      ].filter(t => t.status !== 'completed'));
 
       toast({
         title: copy.tasks.taskCompleted,
@@ -269,62 +268,92 @@ export default function Home() {
   };
   
   const HomeContent = (
-    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900 pb-20">
-      <header className="relative bg-gradient-to-r from-primary to-green-600 text-white px-4 pt-6 pb-20 rounded-b-[3rem]">
-        <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center space-x-2">
-                <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center">
-                   <CircleDollarSign className="h-6 w-6 text-yellow-300"/>
-                </div>
-                <div>
-                    <p className="text-xs">Balance</p>
-                    <p className="font-bold text-lg leading-tight">{diamondBalance.toLocaleString()}</p>
-                </div>
-            </div>
-            <div className="flex items-center space-x-2">
-                <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center">
-                   <Wallet className="h-6 w-6"/>
-                </div>
-                <div>
-                    <p className="text-xs">Cash</p>
-                    <p className="font-bold text-lg leading-tight">₹{inrBalance.toFixed(2)}</p>
-                </div>
-            </div>
-        </div>
+    <main className="flex min-h-screen flex-col items-center p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-md space-y-6">
+        <header className="flex flex-col items-center text-center">
+          <h1 className="font-headline text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200">
+            {copy.appName}
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {copy.appDescription}
+          </p>
+        </header>
 
-        <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-32 h-32">
-            <CircularProgress progress={progress} />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <p className="text-gray-600 dark:text-gray-300 text-xs font-bold">₹{inrBalance.toFixed(2)}</p>
-                <p className="text-gray-400 dark:text-gray-500 text-[10px] leading-tight">out of ₹{MINIMUM_PAYOUT_INR}</p>
-            </div>
-        </div>
-      </header>
-
-      <main className="flex-1 w-full max-w-md mx-auto space-y-4 px-4 mt-8">
         {!isUserLoading && !user && (
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-4" role="alert">
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
                 <p className="font-bold">Welcome, Guest!</p>
                 <p>Please <button onClick={() => router.push('/signup')} className="underline font-semibold">sign up</button> to save your progress and cash out.</p>
             </div>
         )}
-        
-        <div className="bg-gradient-to-r from-green-500 to-primary p-4 rounded-xl flex justify-between items-center text-white shadow-lg">
-            <div>
-                <h3 className="font-bold text-lg">Earn money quickly</h3>
-                <p className="text-sm">Up to ₹10,000</p>
-            </div>
-            <Button variant="secondary" className="bg-white/90 text-primary hover:bg-white">Start</Button>
+
+        <div className="flex space-x-4">
+          <Card className="flex-1">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{copy.balance.diamonds}</CardTitle>
+              <CircleDollarSign className="h-4 w-4 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div key={balanceKey} className="text-2xl font-bold animate-in fade-in-0 slide-in-from-top-4 duration-500">
+                {diamondBalance.toLocaleString()}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="flex-1">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{copy.balance.balance}</CardTitle>
+              <Wallet className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div key={balanceKey} className="text-2xl font-bold animate-in fade-in-0 slide-in-from-top-4 duration-500">
+                ₹{inrBalance.toFixed(2)}
+              </div>
+            </CardContent>
+          </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{copy.cashout.title}</CardTitle>
+            <CardDescription>
+              {copy.cashout.description(MINIMUM_PAYOUT_INR)}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Progress value={progress} />
+            <div className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
+              ₹{inrBalance.toFixed(2)} / ₹{MINIMUM_PAYOUT_INR.toFixed(2)}
+            </div>
+          </CardContent>
+          <CardFooter className="flex-col space-y-2">
+            <Button onClick={handleCashout} disabled={isCashingOut || inrBalance < MINIMUM_PAYOUT_INR} className="w-full">
+              {isCashingOut ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {copy.cashout.buttonProcessing}
+                </>
+              ) : (
+                copy.cashout.button
+              )}
+            </Button>
+            <Button onClick={() => router.push('/refer')} variant="outline" className="w-full">
+              {copy.referral.button}
+            </Button>
+          </CardFooter>
+        </Card>
 
         <div className="space-y-4">
-            <h2 className="font-headline text-xl font-semibold text-gray-800 dark:text-gray-200 mt-6">All offers</h2>
-            <TaskList tasks={anytimeTasks} onCompleteTask={handleTaskComplete} listId="anytime" />
+          <h2 className="font-headline text-xl font-semibold text-gray-800 dark:text-gray-200">{copy.tasks.title}</h2>
+          <TaskList tasks={anytimeTasks} onCompleteTask={handleTaskComplete} listId="anytime" />
         </div>
-      </main>
+        
+        <footer className="text-center text-sm text-gray-500 dark:text-gray-400 pt-4">
+            <p>&copy; {new Date().getFullYear()} {copy.appName}. All rights reserved.</p>
+            <p>
+                <a href="/disclaimer" className="underline">Disclaimer</a> | <a href="#" className="underline">Contact</a>
+            </p>
+        </footer>
+      </div>
       
-      <BottomNav />
-
       <Dialog open={isPayoutFormOpen} onOpenChange={setIsPayoutFormOpen}>
         <DialogContent>
           <DialogHeader>
@@ -352,7 +381,7 @@ export default function Home() {
             <AdPlayerGame onReward={handleGameReward} />
         </DialogContent>
       </Dialog>
-    </div>
+    </main>
   );
   
   if (showSplash) {
@@ -365,3 +394,4 @@ export default function Home() {
 
   return HomeContent;
 }
+
