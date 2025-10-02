@@ -25,6 +25,7 @@ const REFERRAL_COMMISSION_RATE = 0.20;
 
 const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "1", title: "Daily Check-in", reward: 100, type: "basic" },
+    { id: "47", title: "Play & Win up to 100,000 Diamonds!", reward: 0, type: 'game' },
     { id: "2", title: "Watch a video ad", reward: 250, type: "ad" },
     { id: "3", title: "Rate our App", reward: 500, type: "basic" },
     { id: "4", title: "Complete a survey", reward: 1000, type: "basic" },
@@ -32,7 +33,6 @@ const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "6", title: "Share app with a friend", reward: 300, type: "basic" },
     { id: "7", title: "Watch a partner ad", reward: 250, type: "ad" },
     { id: "8", title: "Follow us on social media", reward: 150, type: "basic" },
-    { id: '47', title: 'Play Ad Game', reward: 0, type: 'game' },
     { id: "10", title: "Watch a tutorial video", reward: 200, type: "ad" },
     { id: "11", title: "Enable push notifications", reward: 400, type: "basic" },
     { id: "12", title: "Complete your profile", reward: 200, type: "basic" },
@@ -428,5 +428,7 @@ export default function Home() {
 
   return HomeContent;
 }
+
+    
 
     

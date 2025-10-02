@@ -45,7 +45,7 @@ export const copy = {
   },
   adGame: {
     title: "Ad Game",
-    description: "The longer you watch, the more you earn! Rewards are credited automatically.",
+    description: "Watch ads and stay in the game to earn rewards. Reach the final milestone to win up to 100,000 diamonds!",
     watchAd: "Watch Ad",
     watchingAd: "Watching Ad...",
     timeRewards: "Time Rewards",
@@ -118,4 +118,5 @@ export const copy = {
   }
 };
 
+    
     
