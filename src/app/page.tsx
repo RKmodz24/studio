@@ -36,7 +36,6 @@ const REFERRAL_COMMISSION_RATE = 0.20;
 
 const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "daily_1", title: "Daily Check-in", reward: 100, type: "basic" },
-    { id: "daily_2", title: "Watch a video ad", reward: 250, type: "ad" },
     { id: "daily_3", title: "Install App & Register", reward: 1500, type: "offer", offerId: "install-jar-app", icon: "/jar-icon.png", description: "Complete autopay setup" },
     { id: "1", title: "Play & Win up to 100,000 Diamonds!", reward: 0, type: 'game' },
     { id: "3", title: "Rate our App", reward: 500, type: "basic" },
@@ -418,5 +417,7 @@ export default function Home() {
 }
 
 
+
+    
 
     
