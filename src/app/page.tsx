@@ -23,13 +23,10 @@ const DIAMONDS_PER_INR = 100;
 const MINIMUM_PAYOUT_INR = 500;
 const REFERRAL_COMMISSION_RATE = 0.20;
 
-const initialDailyTasks: Omit<Task, 'status' | 'completed'>[] = [
+const initialTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "daily_1", title: "Daily Check-in", reward: 100, type: "basic" },
     { id: "daily_2", title: "Watch a video ad", reward: 250, type: "ad" },
     { id: "daily_3", title: "Install App & Register", reward: 1500, type: "offer", offerId: "install-jar-app" },
-];
-
-const initialOneTimeTasks: Omit<Task, 'status' | 'completed'>[] = [
     { id: "1", title: "Play & Win up to 100,000 Diamonds!", reward: 0, type: 'game' },
     { id: "3", title: "Rate our App", reward: 500, type: "basic" },
     { id: "4", title: "Complete a survey", reward: 1000, type: "basic" },
@@ -79,35 +76,19 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // Logic to initialize and reset tasks
-    const lastVisitDate = localStorage.getItem('lastVisitDate');
-    const today = new Date().toISOString().split('T')[0];
-    
     let storedTasks: Task[] = [];
     const storedTasksString = localStorage.getItem('tasks');
     if (storedTasksString) {
         storedTasks = JSON.parse(storedTasksString);
     }
 
-    if (lastVisitDate !== today) {
-        // New day, so reset daily tasks
-        const dailyTaskIds = initialDailyTasks.map(t => t.id);
-        storedTasks = storedTasks.map(t => 
-            dailyTaskIds.includes(t.id) ? { ...t, status: 'incomplete' } : t
-        );
-        localStorage.setItem('lastVisitDate', today);
-    }
-
-    // Combine and set tasks
     const allTaskIds = new Set(storedTasks.map(t => t.id));
-    const allInitialTasks = [...initialDailyTasks, ...initialOneTimeTasks];
-    const newTasks = allInitialTasks
+    const newTasks = initialTasks
       .filter(t => !allTaskIds.has(t.id))
       .map(task => ({ ...task, status: 'incomplete' } as Task));
     
     const updatedTasks = [...storedTasks, ...newTasks];
     setTasks(updatedTasks);
-
   }, []);
 
   useEffect(() => {
@@ -133,19 +114,7 @@ export default function Home() {
   const progress = useMemo(() => Math.min((inrBalance / MINIMUM_PAYOUT_INR) * 100, 100), [inrBalance]);
   const commissionInr = useMemo(() => commissionEarned / DIAMONDS_PER_INR, [commissionEarned]);
 
-  const dailyTasks = useMemo(() => {
-    const dailyIds = new Set(initialDailyTasks.map(t => t.id));
-    return tasks.filter(t => dailyIds.has(t.id));
-  }, [tasks]);
-
-  const oneTimeTasks = useMemo(() => {
-    const dailyIds = new Set(initialDailyTasks.map(t => t.id));
-    return tasks.filter(t => !dailyIds.has(t.id));
-  }, [tasks]);
-
-  const pendingDailyTasks = useMemo(() => dailyTasks.filter(t => t.status === 'incomplete'), [dailyTasks]);
-  const pendingOneTimeTasks = useMemo(() => oneTimeTasks.filter(t => t.status === 'incomplete'), [oneTimeTasks]);
-  
+  const pendingTasks = useMemo(() => tasks.filter(t => t.status === 'incomplete'), [tasks]);
   const processingTasks = useMemo(() => tasks.filter(t => t.status === 'processing'), [tasks]);
 
   const addDiamonds = useCallback((amount: number) => {
@@ -176,9 +145,20 @@ export default function Home() {
       if (reward > 0) {
         addDiamonds(reward);
       }
-      setTasks(currentTasks =>
-        currentTasks.map(t => (t.id === taskId ? { ...t, status: 'completed' } : t))
-      );
+      
+      const newAdTask: Task = {
+        id: `ad_${new Date().getTime()}`,
+        title: "Watch a video ad",
+        reward: 250,
+        type: "ad",
+        status: 'incomplete'
+      };
+
+      setTasks(currentTasks => [
+        ...currentTasks.filter(t => t.id !== taskId),
+        newAdTask
+      ]);
+
       toast({
         title: copy.tasks.taskCompleted,
         description: (
@@ -334,7 +314,7 @@ export default function Home() {
       }
       setIsCashingOut(false);
       // Reset all tasks on cashout
-      const allTasks = [...initialDailyTasks, ...initialOneTimeTasks].map(t => ({...t, status: 'incomplete' } as Task));
+      const allTasks = initialTasks.map(t => ({...t, status: 'incomplete' } as Task));
       setTasks(allTasks);
       toast({
         title: copy.toasts.cashoutSuccess,
@@ -393,22 +373,15 @@ export default function Home() {
           )}
 
           <div>
-            <h2 className="font-headline text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center">
-                <CalendarDays className="mr-2 h-6 w-6" />
-                {copy.tasks.dailyTasks}
-            </h2>
-            <TaskList tasks={pendingDailyTasks} onCompleteTask={handleTaskComplete} listId="daily" />
-            {pendingDailyTasks.length === 0 && <p className="text-sm text-center text-muted-foreground py-4">{copy.tasks.allDailyTasksCompleted}</p>}
+            <div className="flex justify-between items-center pt-4 mb-4">
+              <h2 className="font-headline text-2xl font-semibold text-gray-700 dark:text-gray-300">{copy.tasks.title}</h2>
+              <Button onClick={handleSurpriseBonus} disabled={isBonusLoading}>
+                {isBonusLoading ? <Loader2 className="animate-spin" /> : <Gift />}
+                {copy.tasks.surpriseBonus}
+              </Button>
+            </div>
+            <TaskList tasks={pendingTasks} onCompleteTask={handleTaskComplete} listId="anytime" />
           </div>
-
-          <div className="flex justify-between items-center pt-4">
-            <h2 className="font-headline text-2xl font-semibold text-gray-700 dark:text-gray-300">{copy.tasks.title}</h2>
-             <Button onClick={handleSurpriseBonus} disabled={isBonusLoading}>
-              {isBonusLoading ? <Loader2 className="animate-spin" /> : <Gift />}
-              {copy.tasks.surpriseBonus}
-            </Button>
-          </div>
-          <TaskList tasks={pendingOneTimeTasks} onCompleteTask={handleTaskComplete} listId="onetime" />
         </div>
         <footer className="text-center text-sm text-muted-foreground pt-4 flex justify-center space-x-4">
             <Link href="/disclaimer" className="underline hover:text-primary">
@@ -472,3 +445,5 @@ export default function Home() {
 
   return HomeContent;
 }
+
+    
