@@ -22,7 +22,7 @@ const offers: { [key: string]: any } = {
     title: 'Install Rapido & Ride',
     totalInr: 29.16,
     totalDiamonds: 2916,
-    appIcon: '/app-icon.png', // Placeholder for Rapido
+    appIcon: 'https://i.imgur.com/8aVwf2s.png', // Rapido logo
     link: 'https://m.rapido.cc/Ewte/n538dyfh',
     steps: [
       { name: 'Install App', reward: 200, completed: false },
