@@ -35,6 +35,12 @@ const offers: { [key: string]: any } = {
   },
 };
 
+export async function generateStaticParams() {
+  return Object.keys(offers).map((offerId) => ({
+    offerId,
+  }));
+}
+
 export default function OfferPage() {
   const router = useRouter();
   const params = useParams();
