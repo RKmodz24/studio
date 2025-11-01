@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -24,7 +23,7 @@ jobs:
     - name: Build project
       run: npm run build
       
-    - name: Upload artifact
+    - name: Upload to GitHub Pages
       uses: actions/upload-pages-artifact@v1
       with:
         path: ./out
